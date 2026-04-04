@@ -1,0 +1,5 @@
+1:"$Sreact.fragment"
+2:I[81937,["/bundesliga-prognose/_next/static/chunks/0sbjax~5o-56s.js","/bundesliga-prognose/_next/static/chunks/0mq1nenq31n6y.js"],"default"]
+3:I[1250,["/bundesliga-prognose/_next/static/chunks/0sbjax~5o-56s.js","/bundesliga-prognose/_next/static/chunks/0mq1nenq31n6y.js"],"default"]
+4:[]
+0:{"rsc":["$","$1","c",{"children":[null,["$","$L2",null,{"parallelRouterKey":"children","template":["$","$L3",null,{}]}]]}],"isPartial":false,"staleTime":300,"varyParams":"$W4","buildId":"ablHN8X3Tbjr7Hf4f-N_D"}

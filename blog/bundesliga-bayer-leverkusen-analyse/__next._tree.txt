@@ -1,0 +1,2 @@
+:HL["/bundesliga-prognose/_next/static/chunks/01d05wefvdo3m.css","style"]
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"blog","param":null,"prefetchHints":0,"slots":{"children":{"name":"slug","param":{"type":"d","key":"bundesliga-bayer-leverkusen-analyse","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"ablHN8X3Tbjr7Hf4f-N_D"}
