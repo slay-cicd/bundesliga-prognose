@@ -207,7 +207,7 @@ function PreIPOCard() {
         style={{ background: "rgba(196,98,45,0.08)", border: `1px solid ${BURNT}33` }}
       >
         <span style={{ color: BURNT }}>Nächste IPO-Runde:</span>
-        <span className="text-text-muted ml-1.5">Q3 2025 erwartet</span>
+        <span className="text-text-muted ml-1.5">Q3 2026 erwartet</span>
       </div>
     </div>
   );
@@ -299,22 +299,13 @@ export default function SoFunktionierts() {
   return (
     <>
       {/* ── HEADER ───────────────────────────────────────────────────────────── */}
-      <section className="pt-20 pb-16 md:pt-28 md:pb-20">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.p
-            initial={prefersReduced ? false : { opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-[11px] tracking-[0.18em] uppercase text-text-muted mb-8"
-          >
-            concordemarket.de · Dokumentation
-          </motion.p>
-
+      <section className="pt-14 pb-12 md:pt-28 md:pb-20">
+        <div className="max-w-5xl mx-auto px-5 sm:px-6 lg:px-8">
           <div
             style={{
               fontFamily: SERIF,
-              fontSize: "clamp(52px, 9vw, 110px)",
-              lineHeight: 0.95,
+              fontSize: "clamp(48px, 9vw, 110px)",
+              lineHeight: 1,
               letterSpacing: "-0.02em",
             }}
           >
@@ -356,7 +347,7 @@ export default function SoFunktionierts() {
       {SECTIONS.map((section, sectionIdx) => (
         <section
           key={section.id}
-          className="border-t border-border py-16 md:py-24"
+          className="border-t border-border py-12 md:py-24"
           style={sectionIdx % 2 === 1 ? { background: "rgba(255,255,255,0.015)" } : {}}
         >
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -431,38 +422,12 @@ export default function SoFunktionierts() {
         </section>
       ))}
 
-      {/* ── RISK WARNING ─────────────────────────────────────────────────────── */}
-      <section className="border-t border-border py-12">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <SectionReveal>
-            <div className="pl-5" style={{ borderLeft: `2px solid rgba(239,68,68,0.4)` }}>
-              <p
-                className="text-xs uppercase tracking-widest mb-3"
-                style={{ color: "#ef4444", opacity: 0.7 }}
-              >
-                Risikohinweis
-              </p>
-              <p className="text-sm text-text-secondary leading-relaxed mb-3">
-                Der Handel mit Derivaten und Hebelprodukten birgt erhebliche Risiken.
-                Du kannst mehr als deine ursprüngliche Einlage verlieren. Diese Produkte
-                sind nicht für alle Anleger geeignet.
-              </p>
-              <ul className="text-sm text-text-muted space-y-1.5">
-                <li>Hebelprodukte sind komplex und mit hohem Verlustrisiko verbunden.</li>
-                <li>74–89% der Kleinanlegerkonten verlieren Geld beim Handel mit CFDs.</li>
-                <li>Investiere nur, was du bereit bist vollständig zu verlieren.</li>
-              </ul>
-            </div>
-          </SectionReveal>
-        </div>
-      </section>
-
       {/* ── FINAL CTA ────────────────────────────────────────────────────────── */}
-      <section className="border-t border-border py-24 md:py-32">
+      <section className="border-t border-border py-14 md:py-32">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <SectionReveal>
             <p
-              className="text-text-primary leading-tight mb-10"
+              className="text-text-primary leading-tight mb-8 md:mb-10"
               style={{
                 fontFamily: SERIF,
                 fontSize: "clamp(28px, 4.5vw, 52px)",

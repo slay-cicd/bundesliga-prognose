@@ -82,7 +82,7 @@ export function Navbar() {
 
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="md:hidden p-2 -mr-2 transition-colors"
+            className="md:hidden p-3 -mr-3 transition-colors"
             style={{ color: "var(--color-text-secondary)" }}
             aria-label="Menü"
           >

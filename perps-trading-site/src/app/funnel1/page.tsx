@@ -55,7 +55,7 @@ function EmailCapture({ ctaText = "Früher Zugang sichern" }: { ctaText?: string
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Deine E-Mail-Adresse"
               required
-              className="flex-1 px-4 py-3.5 rounded-xl text-sm outline-none"
+              className="flex-1 px-4 py-3.5 rounded-xl text-base outline-none"
               style={{
                 background: "#18181b",
                 border: "1px solid #2a2a2d",
@@ -228,15 +228,15 @@ export default function Funnel1Page() {
       </nav>
 
       {/* ── HERO ─────────────────────────────────────────────────────────────── */}
-      <section className="relative z-10 pt-20 pb-20 md:pt-32 md:pb-28 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative z-10 pt-14 pb-14 md:pt-32 md:pb-28 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
           <h1
             className="mb-8"
             style={{
               fontFamily: SERIF,
-              fontSize: "clamp(64px, 11vw, 144px)",
+              fontSize: "clamp(52px, 11vw, 144px)",
               letterSpacing: "-0.02em",
-              lineHeight: 0.95,
+              lineHeight: 1,
             }}
             aria-label="Perpetual Contracts. Die neue Form des Derivatehandels."
           >
@@ -292,9 +292,9 @@ export default function Funnel1Page() {
       <div className="relative z-10 border-t border-border" />
 
       {/* ── STATS STRIP ──────────────────────────────────────────────────────── */}
-      <section className="relative z-10 py-14">
+      <section className="relative z-10 py-10 md:py-14">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-10">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 md:gap-10">
             {[
               { val: "24 / 7", label: "Handelszeiten" },
               { val: "100×", label: "Max. Hebel" },
@@ -330,10 +330,10 @@ export default function Funnel1Page() {
       <div className="relative z-10 border-t border-border" />
 
       {/* ── VALUE PROPS ──────────────────────────────────────────────────────── */}
-      <section className="relative z-10 py-20 md:py-32">
+      <section className="relative z-10 py-12 md:py-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <SectionReveal>
-            <div className="mb-14">
+            <div className="mb-10 md:mb-14">
               <p
                 className="text-[11px] uppercase tracking-widest mb-3"
                 style={{ color: "var(--color-text-muted)" }}
@@ -400,10 +400,10 @@ export default function Funnel1Page() {
       <div className="relative z-10 border-t border-border" />
 
       {/* ── COMPARISON ───────────────────────────────────────────────────────── */}
-      <section className="relative z-10 py-20 md:py-28">
+      <section className="relative z-10 py-12 md:py-28">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <SectionReveal>
-            <div className="mb-12">
+            <div className="mb-10 md:mb-12">
               <p
                 className="text-[11px] uppercase tracking-widest mb-3"
                 style={{ color: "var(--color-text-muted)" }}
@@ -427,54 +427,59 @@ export default function Funnel1Page() {
             </div>
           </SectionReveal>
 
-          {/* Table header */}
-          <div
-            className="grid gap-4 pb-3 border-b border-border"
-            style={{ gridTemplateColumns: "1.5fr 1fr 1fr" }}
-          >
-            <span />
-            <p
-              className="text-[10px] uppercase tracking-widest font-semibold"
-              style={{ color: BURNT }}
-            >
-              Concorde
-            </p>
-            <p
-              className="text-[10px] uppercase tracking-widest"
-              style={{ color: "var(--color-text-muted)" }}
-            >
-              Traditionell
-            </p>
-          </div>
-
-          {COMPARISON.map((row, i) => (
-            <SectionReveal key={row.feature} delay={i * 0.06}>
+          {/* Table — overflow-x-auto for safety on narrow screens */}
+          <div className="overflow-x-auto -mx-1">
+            <div className="min-w-[480px] mx-1">
+              {/* Table header */}
               <div
-                className="grid gap-4 py-4 border-b border-border items-center"
+                className="grid gap-4 pb-3 border-b border-border"
                 style={{ gridTemplateColumns: "1.5fr 1fr 1fr" }}
               >
-                <span className="text-sm" style={{ color: "var(--color-text-secondary)" }}>
-                  {row.feature}
-                </span>
-                <span
-                  className="text-sm font-semibold"
-                  style={{ color: "var(--color-text-primary)" }}
+                <span />
+                <p
+                  className="text-[10px] uppercase tracking-widest font-semibold"
+                  style={{ color: BURNT }}
                 >
-                  {row.concorde}
-                </span>
-                <span className="text-sm" style={{ color: "var(--color-text-muted)" }}>
-                  {row.traditional}
-                </span>
+                  Concorde
+                </p>
+                <p
+                  className="text-[10px] uppercase tracking-widest"
+                  style={{ color: "var(--color-text-muted)" }}
+                >
+                  Traditionell
+                </p>
               </div>
-            </SectionReveal>
-          ))}
+
+              {COMPARISON.map((row, i) => (
+                <SectionReveal key={row.feature} delay={i * 0.06}>
+                  <div
+                    className="grid gap-4 py-4 border-b border-border items-center"
+                    style={{ gridTemplateColumns: "1.5fr 1fr 1fr" }}
+                  >
+                    <span className="text-sm" style={{ color: "var(--color-text-secondary)" }}>
+                      {row.feature}
+                    </span>
+                    <span
+                      className="text-sm font-semibold"
+                      style={{ color: "var(--color-text-primary)" }}
+                    >
+                      {row.concorde}
+                    </span>
+                    <span className="text-sm" style={{ color: "var(--color-text-muted)" }}>
+                      {row.traditional}
+                    </span>
+                  </div>
+                </SectionReveal>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
       <div className="relative z-10 border-t border-border" />
 
       {/* ── MARKETS STRIP ────────────────────────────────────────────────────── */}
-      <section className="relative z-10 py-20">
+      <section className="relative z-10 py-12 md:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <SectionReveal>
             <div className="mb-10">
@@ -554,7 +559,7 @@ export default function Funnel1Page() {
       <div className="relative z-10 border-t border-border" />
 
       {/* ── FINAL CTA ────────────────────────────────────────────────────────── */}
-      <section className="relative z-10 py-24 md:py-32">
+      <section className="relative z-10 py-14 md:py-32">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <SectionReveal>
             <p
@@ -580,7 +585,7 @@ export default function Funnel1Page() {
       {/* ── RISK DISCLAIMER ──────────────────────────────────────────────────── */}
       <section className="relative z-10 border-t border-border py-10 px-5 sm:px-8">
         <div className="max-w-5xl mx-auto">
-          <p className="text-[11px] leading-relaxed" style={{ color: "var(--color-text-muted)" }}>
+          <p className="text-xs leading-relaxed" style={{ color: "var(--color-text-muted)" }}>
             <strong style={{ color: "var(--color-text-secondary)" }}>Risikohinweis:</strong>{" "}
             Perpetual Contracts sind komplexe Finanzinstrumente mit erheblichem Verlustrisiko.
             Hebel-Trading kann zu Verlusten führen, die Ihren gesamten eingesetzten Betrag

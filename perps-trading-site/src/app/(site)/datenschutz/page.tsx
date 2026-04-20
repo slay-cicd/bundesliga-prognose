@@ -26,7 +26,7 @@ export default function Datenschutz() {
             Concorde<br />
             Invalidenstraße 5<br />
             10115 Berlin<br />
-            E-Mail: hello@concorde.trade
+            E-Mail: hallo@concordemarket.de
           </p>
         </section>
 
@@ -93,7 +93,7 @@ export default function Datenschutz() {
           </p>
         </section>
 
-        <p className="text-xs text-text-muted mt-8">Stand: April 2025</p>
+        <p className="text-xs text-text-muted mt-8">Stand: April 2026</p>
       </div>
     </div>
   );

@@ -43,7 +43,7 @@ function EmailCapture({ ctaText = "Konto eröffnen" }: { ctaText?: string }) {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Deine E-Mail-Adresse"
               required
-              className="flex-1 px-4 py-3.5 rounded-xl text-sm outline-none transition-colors"
+              className="flex-1 px-4 py-3.5 rounded-xl text-base outline-none transition-colors"
               style={{
                 background: "#141416",
                 border: "1px solid #28282b",
@@ -226,14 +226,14 @@ export default function FunnelPage() {
 
       {/* ── THIN TOP RIBBON ────────────────────────────────────────────────── */}
       <div
-        className="relative z-20 text-center py-1.5 px-4 text-[10px] font-semibold uppercase tracking-widest"
+        className="relative z-20 text-center py-1.5 px-4 text-[10px] font-semibold uppercase tracking-widest overflow-x-hidden"
         style={{
           background: "#0d0d0f",
           borderBottom: `1px solid ${BURNT}33`,
           color: "var(--color-text-secondary)",
         }}
       >
-        <span className="inline-flex items-center gap-2">
+        <span className="inline-flex items-center gap-2 flex-wrap justify-center">
           <span className="relative flex h-1.5 w-1.5">
             <span
               className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-70"
@@ -296,7 +296,7 @@ export default function FunnelPage() {
       </nav>
 
       {/* ── HERO ─────────────────────────────────────────────────────────────── */}
-      <section className="relative z-10 pt-4 pb-16 px-5 sm:px-8 max-w-5xl mx-auto overflow-hidden">
+      <section className="relative z-10 pt-4 pb-12 px-5 sm:px-8 max-w-5xl mx-auto overflow-hidden">
         {/* Quiet eyebrow instead of loud pill */}
         <motion.p
           initial={prefersReduced ? false : { opacity: 0, y: -4 }}
@@ -316,9 +316,9 @@ export default function FunnelPage() {
         <h1
           style={{
             fontFamily: SERIF,
-            fontSize: "clamp(68px, 13vw, 156px)",
-            lineHeight: 0.86,
-            letterSpacing: "-0.035em",
+            fontSize: "clamp(52px, 13vw, 156px)",
+            lineHeight: 0.92,
+            letterSpacing: "-0.03em",
             fontWeight: 300,
             marginBottom: "2rem",
           }}
@@ -418,10 +418,10 @@ export default function FunnelPage() {
       </section>
 
       {/* ── BONUS WHEEL ────────────────────────────────────────────────────── */}
-      <section className="relative z-10 border-t border-border py-24 md:py-28 px-5 sm:px-8">
+      <section className="relative z-10 border-t border-border py-14 md:py-28 px-5 sm:px-8">
         <div className="max-w-5xl mx-auto">
           <SectionReveal>
-            <div className="text-center mb-14 max-w-2xl mx-auto">
+            <div className="text-center mb-10 md:mb-14 max-w-2xl mx-auto">
               <p
                 className="text-[10px] uppercase tracking-[0.2em] mb-5 font-semibold"
                 style={{ color: "var(--color-text-muted)" }}
@@ -463,10 +463,10 @@ export default function FunnelPage() {
       </section>
 
       {/* ── LEVERAGE DEMO ──────────────────────────────────────────────────── */}
-      <section className="relative z-10 border-t border-border py-24 md:py-28 px-5 sm:px-8">
+      <section className="relative z-10 border-t border-border py-14 md:py-28 px-5 sm:px-8">
         <div className="max-w-5xl mx-auto">
           <SectionReveal>
-            <div className="text-center mb-14 max-w-2xl mx-auto">
+            <div className="text-center mb-10 md:mb-14 max-w-2xl mx-auto">
               <p
                 className="text-[10px] uppercase tracking-[0.2em] mb-5 font-semibold"
                 style={{ color: "var(--color-text-muted)" }}
@@ -509,7 +509,7 @@ export default function FunnelPage() {
 
       {/* ── LIVE PAYOUTS ───────────────────────────────────────────────────── */}
       <section
-        className="relative z-10 border-t border-border py-24 md:py-28 px-5 sm:px-8"
+        className="relative z-10 border-t border-border py-14 md:py-28 px-5 sm:px-8"
         style={{
           background:
             "linear-gradient(180deg, transparent 0%, rgba(196,98,45,0.04) 100%)",
@@ -517,7 +517,7 @@ export default function FunnelPage() {
       >
         <div className="max-w-5xl mx-auto">
           <SectionReveal>
-            <div className="text-center mb-14">
+            <div className="text-center mb-10 md:mb-14">
               <p
                 className="text-[10px] uppercase tracking-[0.2em] mb-5 font-semibold inline-flex items-center gap-2"
                 style={{ color: "#22c55e" }}
@@ -559,7 +559,7 @@ export default function FunnelPage() {
       </section>
 
       {/* ── GEWINNER HEUTE ─────────────────────────────────────────────────── */}
-      <section className="relative z-10 border-t border-border py-24 md:py-28 px-5 sm:px-8">
+      <section className="relative z-10 border-t border-border py-14 md:py-28 px-5 sm:px-8">
         <div className="max-w-3xl mx-auto">
           <SectionReveal>
             <p
@@ -604,7 +604,7 @@ export default function FunnelPage() {
       </section>
 
       {/* ── FEATURES ───────────────────────────────────────────────────────── */}
-      <section className="relative z-10 border-t border-border py-24 md:py-28 px-5 sm:px-8">
+      <section className="relative z-10 border-t border-border py-14 md:py-28 px-5 sm:px-8">
         <div className="max-w-3xl mx-auto">
           <SectionReveal>
             <p
@@ -677,7 +677,7 @@ export default function FunnelPage() {
 
       {/* ── PULL QUOTE / EDITORIAL ─────────────────────────────────────────── */}
       <section
-        className="relative z-10 border-t border-border py-24 md:py-28 px-5 sm:px-8"
+        className="relative z-10 border-t border-border py-14 md:py-28 px-5 sm:px-8"
         style={{ background: "rgba(196,98,45,0.025)" }}
       >
         <div className="max-w-3xl mx-auto">
@@ -707,7 +707,7 @@ export default function FunnelPage() {
       </section>
 
       {/* ── SOCIAL PROOF NUMBERS ───────────────────────────────────────────── */}
-      <section className="relative z-10 border-t border-border py-20 px-5 sm:px-8">
+      <section className="relative z-10 border-t border-border py-12 md:py-20 px-5 sm:px-8">
         <div className="max-w-5xl mx-auto">
           <SectionReveal>
             <p
@@ -806,7 +806,7 @@ export default function FunnelPage() {
 
       {/* ── FINAL CTA ──────────────────────────────────────────────────────── */}
       <section
-        className="relative z-10 border-t border-border py-28 md:py-36 px-5 sm:px-8"
+        className="relative z-10 border-t border-border py-16 md:py-36 px-5 sm:px-8"
         style={{
           background:
             "radial-gradient(ellipse at 50% 100%, rgba(196,98,45,0.10) 0%, transparent 60%)",
@@ -855,7 +855,7 @@ export default function FunnelPage() {
             <div className="flex justify-center">
               <EmailCapture ctaText="Konto eröffnen" />
             </div>
-            <p className="text-[11px] mt-4" style={{ color: "var(--color-text-muted)" }}>
+            <p className="text-xs mt-4" style={{ color: "var(--color-text-muted)" }}>
               Mit deinem €20 – €250 Startbonus · Keine Kreditkarte · MiFID II
             </p>
           </SectionReveal>
@@ -865,7 +865,7 @@ export default function FunnelPage() {
       {/* ── RISK DISCLAIMER ────────────────────────────────────────────────── */}
       <section className="relative z-10 border-t border-border py-10 px-5 sm:px-8">
         <div className="max-w-3xl mx-auto">
-          <p className="text-[11px] leading-relaxed" style={{ color: "var(--color-text-muted)" }}>
+          <p className="text-xs leading-relaxed" style={{ color: "var(--color-text-muted)" }}>
             <strong style={{ color: "var(--color-text-secondary)" }}>Risikohinweis:</strong>{" "}
             Perpetual Contracts und Hebel-Produkte sind hochkomplexe Finanzinstrumente mit
             erheblichem Verlustrisiko. Der Handel mit Hebel kann zu Verlusten führen, die

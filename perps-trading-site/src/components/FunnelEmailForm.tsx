@@ -45,7 +45,7 @@ export function FunnelEmailForm({
               onChange={(e) => setEmail(e.target.value)}
               placeholder={placeholder}
               required
-              className="flex-1 px-4 py-3.5 rounded-xl text-sm outline-none transition-all duration-200"
+              className="flex-1 px-4 py-3.5 rounded-xl text-base outline-none transition-all duration-200"
               style={
                 isLight
                   ? {

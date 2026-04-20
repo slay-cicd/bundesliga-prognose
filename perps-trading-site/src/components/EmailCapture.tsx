@@ -34,7 +34,7 @@ export function EmailCapture({ dark = false }: EmailCaptureProps) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="deine@email.de"
-              className="flex-1 px-4 py-3 rounded-lg border border-border bg-surface-2 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent placeholder:text-text-muted"
+              className="flex-1 px-4 py-3 rounded-lg border border-border bg-surface-2 text-base text-text-primary focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent placeholder:text-text-muted"
             />
             <button
               type="submit"

@@ -72,12 +72,15 @@ export default function Home() {
   const [category, setCategory] = useState<Category | "all">("all");
   const prefersReduced = useReducedMotion();
 
-  const filtered = category === "all" ? markets : markets.filter((m) => m.category === category);
+  const perpMarkets = markets.filter((m) => m.type === "perp");
+  const shortMarkets = markets.filter((m) => m.type !== "perp");
+  const filteredPerps = category === "all" ? perpMarkets : perpMarkets.filter((m) => m.category === category);
+  const filteredShort = category === "all" ? shortMarkets : shortMarkets.filter((m) => m.category === category);
 
   return (
     <>
       {/* ── HERO ─────────────────────────────────────────────────────────────── */}
-      <section className="relative pt-20 pb-20 md:pt-32 md:pb-28 overflow-hidden">
+      <section className="relative pt-16 pb-14 md:pt-32 md:pb-28 overflow-hidden">
         {/* Radial glow */}
         <div
           className="absolute inset-0 pointer-events-none"
@@ -87,15 +90,6 @@ export default function Home() {
         />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.p
-            initial={prefersReduced ? false : { opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-[11px] tracking-[0.18em] uppercase text-text-muted mb-10"
-          >
-            concordemarket.de · Beta 2025
-          </motion.p>
-
           <h1
             className="mb-10"
             style={{
@@ -122,8 +116,8 @@ export default function Home() {
             transition={{ ease: "easeOut", duration: 0.6, delay: 0.48 }}
             className="text-base sm:text-lg text-text-secondary mb-10 max-w-lg leading-relaxed"
           >
-            Krypto, Aktien, Forex und mehr — handle Kursbewegungen rund um
-            die Uhr, mit einstellbarem Hebel, ohne Ablaufdatum.
+            Die neue Form des Derivatehandels — schneller, flexibler, günstiger. Krypto,
+            Aktien, Rohstoffe, Forex: alle Märkte, ein Konto, kein Ablaufdatum.
           </motion.p>
 
           <motion.div
@@ -157,20 +151,24 @@ export default function Home() {
       {/* Divider */}
       <div className="border-t border-border" />
 
-      {/* ── MARKETS GRID ─────────────────────────────────────────────────────── */}
-      <section className="py-16 md:py-24">
+      {/* Perpetual Markets (Primary) */}
+      <section className="py-12 md:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-end justify-between mb-8 gap-4 flex-wrap">
             <div>
               <p className="text-[11px] uppercase tracking-widest text-text-muted mb-1.5">
-                Live-Märkte
+                Perpetual Markets
               </p>
               <h2
                 className="text-text-primary leading-tight"
                 style={{ fontFamily: SERIF, fontSize: "clamp(28px, 4vw, 42px)", fontWeight: 400 }}
               >
-                Alle Märkte. <span className="italic" style={{ color: BURNT }}>Eine Plattform.</span>
+                Kein Ablaufdatum. <span className="italic" style={{ color: BURNT }}>Voller Hebel.</span>
               </h2>
+              <p className="text-sm text-text-secondary mt-3 max-w-md leading-relaxed">
+                Trade Krypto, Aktien, Rohstoffe und FX mit bis zu 100× Hebel — 24/7, ohne Broker,
+                ohne T+2 Settlement.
+              </p>
             </div>
             <CategoryTabs selected={category} onChange={setCategory} />
           </div>
@@ -179,21 +177,52 @@ export default function Home() {
             layout
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3"
           >
-            {filtered.map((market, i) => (
+            {filteredPerps.map((market, i) => (
               <MarketCard key={market.id} market={market} index={i} />
             ))}
           </motion.div>
 
-          {filtered.length === 0 && (
+          {filteredPerps.length === 0 && (
             <p className="text-center text-text-muted py-12 text-sm">
-              Keine Märkte in dieser Kategorie.
+              Keine Perpetuals in dieser Kategorie.
             </p>
           )}
         </div>
       </section>
 
+      {/* Short-term Markets (Secondary) */}
+      {filteredShort.length > 0 && (
+        <section className="py-12 md:py-20 border-t border-border">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="mb-8">
+              <p className="text-[11px] uppercase tracking-widest text-text-muted mb-1.5">
+                Kurzzeit-Märkte
+              </p>
+              <h2
+                className="text-text-primary leading-tight"
+                style={{ fontFamily: SERIF, fontSize: "clamp(24px, 3.5vw, 36px)", fontWeight: 400 }}
+              >
+                Hoch oder Runter. <span className="italic" style={{ color: BURNT }}>In Minuten.</span>
+              </h2>
+              <p className="text-sm text-text-secondary mt-3 max-w-md leading-relaxed">
+                5- bis 60-Minuten-Fenster auf die gleichen Assets. Schneller Einstieg ohne Hebel-Komplexität.
+              </p>
+            </div>
+
+            <motion.div
+              layout
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3"
+            >
+              {filteredShort.map((market, i) => (
+                <MarketCard key={market.id} market={market} index={i} />
+              ))}
+            </motion.div>
+          </div>
+        </section>
+      )}
+
       {/* ── LEVERAGE ─────────────────────────────────────────────────────────── */}
-      <section className="py-16 md:py-28 border-t border-border">
+      <section className="py-12 md:py-28 border-t border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-12 lg:gap-20 items-center">
             {/* Left: editorial pull-quote */}
@@ -277,7 +306,7 @@ export default function Home() {
       </section>
 
       {/* ── FINAL CTA ────────────────────────────────────────────────────────── */}
-      <section className="py-24 md:py-32 border-t border-border">
+      <section className="py-14 md:py-32 border-t border-border">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <SectionReveal>
             <p

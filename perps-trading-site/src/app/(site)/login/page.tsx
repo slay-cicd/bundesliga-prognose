@@ -67,7 +67,7 @@ export default function Login() {
                   type="email"
                   required
                   placeholder="deine@email.de"
-                  className="w-full px-4 py-3.5 rounded-xl text-sm outline-none transition-all"
+                  className="w-full px-4 py-3.5 rounded-xl text-base outline-none transition-all"
                   style={{
                     background: "#18181b",
                     border: "1px solid #2a2a2d",
@@ -95,7 +95,7 @@ export default function Login() {
                   type="password"
                   required
                   placeholder="••••••••"
-                  className="w-full px-4 py-3.5 rounded-xl text-sm outline-none transition-all"
+                  className="w-full px-4 py-3.5 rounded-xl text-base outline-none transition-all"
                   style={{
                     background: "#18181b",
                     border: "1px solid #2a2a2d",

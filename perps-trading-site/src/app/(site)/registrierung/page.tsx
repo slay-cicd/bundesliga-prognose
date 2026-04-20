@@ -259,7 +259,7 @@ export default function Registrierung() {
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           placeholder="deine@email.de"
-                          className="w-full px-4 py-3.5 rounded-xl text-sm outline-none transition-all focus:ring-2"
+                          className="w-full px-4 py-3.5 rounded-xl text-base outline-none transition-all focus:ring-2"
                           style={{
                             background: "#18181b",
                             border: "1px solid #2a2a2d",
@@ -280,7 +280,7 @@ export default function Registrierung() {
                           value={name}
                           onChange={(e) => setName(e.target.value)}
                           placeholder="Max Mustermann"
-                          className="w-full px-4 py-3.5 rounded-xl text-sm outline-none transition-all"
+                          className="w-full px-4 py-3.5 rounded-xl text-base outline-none transition-all"
                           style={{
                             background: "#18181b",
                             border: "1px solid #2a2a2d",
@@ -310,7 +310,7 @@ export default function Registrierung() {
                           required
                           minLength={8}
                           placeholder="Mindestens 8 Zeichen"
-                          className="w-full px-4 py-3.5 rounded-xl text-sm outline-none transition-all"
+                          className="w-full px-4 py-3.5 rounded-xl text-base outline-none transition-all"
                           style={{
                             background: "#18181b",
                             border: "1px solid #2a2a2d",
@@ -329,7 +329,7 @@ export default function Registrierung() {
                           required
                           minLength={8}
                           placeholder="Passwort wiederholen"
-                          className="w-full px-4 py-3.5 rounded-xl text-sm outline-none transition-all"
+                          className="w-full px-4 py-3.5 rounded-xl text-base outline-none transition-all"
                           style={{
                             background: "#18181b",
                             border: "1px solid #2a2a2d",

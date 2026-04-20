@@ -315,7 +315,7 @@ export function FunnelLeverageDemo() {
           </p>
         </div>
 
-        <p className="text-[10px] leading-relaxed pt-1" style={{ color: "var(--color-text-muted)" }}>
+        <p className="text-xs leading-relaxed pt-1" style={{ color: "var(--color-text-muted)" }}>
           Vereinfachte Darstellung. Hebel-Trading birgt Totalverlust-Risiko.
         </p>
       </div>

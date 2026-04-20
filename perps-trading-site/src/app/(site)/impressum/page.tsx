@@ -15,7 +15,7 @@ export default function Impressum() {
             Angaben gemäß § 5 TMG
           </h2>
           <p className="text-text-secondary leading-relaxed">
-            Concorde<br />
+            Tenacity Labs UG (haftungsbeschränkt)<br />
             Invalidenstraße 5<br />
             10115 Berlin<br />
             Deutschland
@@ -25,7 +25,7 @@ export default function Impressum() {
         <section>
           <h2 className="text-base font-semibold text-text-primary mb-2">Kontakt</h2>
           <p className="text-text-secondary leading-relaxed">
-            E-Mail: hello@concorde.trade
+            E-Mail: hallo@concordemarket.de
           </p>
         </section>
 
@@ -34,7 +34,7 @@ export default function Impressum() {
             Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV
           </h2>
           <p className="text-text-secondary leading-relaxed">
-            Concorde<br />
+            Tenacity Labs UG (haftungsbeschränkt)<br />
             Invalidenstraße 5<br />
             10115 Berlin
           </p>

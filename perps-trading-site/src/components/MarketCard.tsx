@@ -17,6 +17,7 @@ const SERIF = "var(--font-cormorant, Georgia, serif)";
 
 export function MarketCard({ market, index }: MarketCardProps) {
   const positive = market.change24h >= 0;
+  const isPerp = market.type === "perp";
 
   return (
     <Link href={`/market/${market.id}`}>
@@ -73,11 +74,22 @@ export function MarketCard({ market, index }: MarketCardProps) {
             </div>
           </div>
           <div className="flex flex-col items-end gap-1.5">
-            <span className="text-[10px] text-text-muted bg-surface-2 px-2 py-0.5 rounded tracking-widest uppercase">
+            <span
+              className="text-[10px] px-2 py-0.5 rounded tracking-widest uppercase font-semibold"
+              style={{
+                background: isPerp ? "rgba(196,98,45,0.12)" : "var(--color-surface-2)",
+                color: isPerp ? "#C4622D" : "var(--color-text-muted)",
+              }}
+            >
               {market.typeLabel}
             </span>
             {(market.type === "5min" || market.type === "15min" || market.type === "1h") && (
               <CountdownTimer type={market.type} />
+            )}
+            {isPerp && market.maxLeverage && (
+              <span className="text-[10px] text-text-muted tabular-nums">
+                bis {market.maxLeverage}×
+              </span>
             )}
           </div>
         </div>
@@ -95,15 +107,40 @@ export function MarketCard({ market, index }: MarketCardProps) {
           <Sparkline data={market.sparkline} positive={positive} />
         </div>
 
-        {/* Odds bar */}
-        <div className="flex gap-2">
-          <div className="flex-1 text-center py-2 rounded-lg bg-up-dim text-up text-[11px] font-bold tracking-wide">
-            Hoch {market.upOdds}¢
+        {/* Action bar */}
+        {isPerp ? (
+          <>
+            <div className="flex gap-2 mb-2">
+              <div className="flex-1 text-center py-2.5 rounded-lg bg-up-dim text-up text-xs font-bold tracking-wide">
+                Long
+              </div>
+              <div className="flex-1 text-center py-2.5 rounded-lg bg-down-dim text-down text-xs font-bold tracking-wide">
+                Short
+              </div>
+            </div>
+            {typeof market.fundingRate === "number" && (
+              <div className="flex items-center justify-between text-xs text-text-muted">
+                <span className="tracking-widest uppercase">Funding 8h</span>
+                <span
+                  className="tabular-nums font-semibold"
+                  style={{ color: market.fundingRate >= 0 ? "#22c55e" : "#ef4444" }}
+                >
+                  {market.fundingRate >= 0 ? "+" : ""}
+                  {market.fundingRate.toFixed(4)}%
+                </span>
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="flex gap-2">
+            <div className="flex-1 text-center py-2.5 rounded-lg bg-up-dim text-up text-xs font-bold tracking-wide">
+              Hoch {market.upOdds}¢
+            </div>
+            <div className="flex-1 text-center py-2.5 rounded-lg bg-down-dim text-down text-xs font-bold tracking-wide">
+              Runter {market.downOdds}¢
+            </div>
           </div>
-          <div className="flex-1 text-center py-2 rounded-lg bg-down-dim text-down text-[11px] font-bold tracking-wide">
-            Runter {market.downOdds}¢
-          </div>
-        </div>
+        )}
       </motion.div>
     </Link>
   );

@@ -59,7 +59,7 @@ export function LeverageSlider() {
         </div>
       </div>
 
-      <p className="text-[10px] text-text-muted text-center mt-3">
+      <p className="text-xs text-text-muted text-center mt-3">
         Vereinfachte Darstellung. Verluste bis zur gesamten Einlage möglich.
       </p>
     </div>

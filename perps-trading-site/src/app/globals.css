@@ -9,10 +9,10 @@
   --color-border: #2a2a2d;
   --color-border-light: #333338;
   --color-text-primary: #e5e5e7;
-  --color-text-secondary: #8b8b8e;
-  --color-text-muted: #5a5a5d;
-  --color-accent: #7c5cfc;
-  --color-accent-hover: #6d4de6;
+  --color-text-secondary: #a1a1a4;
+  --color-text-muted: #6e6e72;
+  --color-accent: #C4622D;
+  --color-accent-hover: #a85322;
   --color-up: #22c55e;
   --color-up-dim: rgba(34, 197, 94, 0.12);
   --color-down: #ef4444;
@@ -80,7 +80,7 @@ input[type="range"]::-webkit-slider-thumb {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #7c5cfc;
+  background: #C4622D;
   margin-top: -7px;
   cursor: pointer;
 }

@@ -221,7 +221,7 @@ export default function MarketPage({ params }: { params: Promise<{ id: string }>
             >
               <div>
                 <p
-                  className="text-[9px] uppercase tracking-widest mb-1"
+                  className="text-[10px] uppercase tracking-widest mb-1"
                   style={{ color: "var(--color-text-muted)" }}
                 >
                   {isBinary ? "Price to Beat" : "24h Öffnung"}
@@ -239,7 +239,7 @@ export default function MarketPage({ params }: { params: Promise<{ id: string }>
               </div>
               <div>
                 <p
-                  className="text-[9px] uppercase tracking-widest mb-1"
+                  className="text-[10px] uppercase tracking-widest mb-1"
                   style={{ color: "var(--color-text-muted)" }}
                 >
                   24h Änderung
@@ -254,7 +254,7 @@ export default function MarketPage({ params }: { params: Promise<{ id: string }>
               </div>
               <div>
                 <p
-                  className="text-[9px] uppercase tracking-widest mb-1"
+                  className="text-[10px] uppercase tracking-widest mb-1"
                   style={{ color: "var(--color-text-muted)" }}
                 >
                   Max. Hebel
@@ -272,7 +272,7 @@ export default function MarketPage({ params }: { params: Promise<{ id: string }>
               </div>
               <div>
                 <p
-                  className="text-[9px] uppercase tracking-widest mb-1"
+                  className="text-[10px] uppercase tracking-widest mb-1"
                   style={{ color: "var(--color-text-muted)" }}
                 >
                   Kategorie
