@@ -69,11 +69,20 @@ export function FunnelBonusWheel() {
         margin: "0 auto",
       }}
     >
-      <p className="text-[10px] uppercase tracking-widest font-bold mb-1" style={{ color: BURNT }}>
-        🎰 Mystery Bonus Wheel
+      <p className="text-[10px] uppercase tracking-[0.2em] font-semibold mb-1" style={{ color: BURNT }}>
+        Mystery Bonus
       </p>
-      <p className="text-xs mb-6" style={{ color: "var(--color-text-muted)" }}>
-        Jede Registrierung gewinnt. Was wird es bei dir?
+      <p
+        className="mb-6"
+        style={{
+          fontFamily: SERIF,
+          fontSize: "1rem",
+          fontStyle: "italic",
+          color: "var(--color-text-muted)",
+          fontWeight: 300,
+        }}
+      >
+        Jeder gewinnt. Die Frage ist nur: wie viel.
       </p>
 
       {/* Wheel */}
@@ -152,8 +161,8 @@ export function FunnelBonusWheel() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
           >
-            <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--color-text-muted)" }}>
-              Dein Bonus
+            <p className="text-[10px] uppercase tracking-[0.2em] mb-1 font-semibold" style={{ color: "var(--color-text-muted)" }}>
+              Dein Startkapital
             </p>
             <p
               style={{
@@ -169,11 +178,20 @@ export function FunnelBonusWheel() {
             >
               {result.label}
             </p>
-            <p className="text-sm mt-2 mb-1" style={{ color: "#22c55e" }}>
-              🎉 Startkapital gesichert
+            <p
+              className="mt-2"
+              style={{
+                fontFamily: SERIF,
+                fontSize: "1.05rem",
+                fontStyle: "italic",
+                color: "#22c55e",
+                fontWeight: 300,
+              }}
+            >
+              Reserviert.
             </p>
-            <p className="text-[11px]" style={{ color: "var(--color-text-muted)" }}>
-              Bonus wird nach Registrierung aktiviert
+            <p className="text-[11px] mt-1" style={{ color: "var(--color-text-muted)" }}>
+              Wird nach Kontoeröffnung aktiviert
             </p>
           </motion.div>
         ) : (

@@ -76,12 +76,12 @@ export function FunnelLeverageDemo() {
   // ROI % for hype badge
   const roiPct = ((gain10 / stake) * 100).toFixed(0);
 
-  // Winner tier (psychological reward for high leverage)
+  // Risk profile label — editorial, not meme
   const tier =
-    leverage >= 75 ? { label: "DEGEN MODE", color: "#ef4444" } :
-    leverage >= 40 ? { label: "HIGH ROLLER", color: BURNT } :
-    leverage >= 15 ? { label: "PROFI", color: "#eab308" } :
-    { label: "SAFE PLAY", color: "#22c55e" };
+    leverage >= 75 ? { label: "Aggressiv", color: "#ef4444" } :
+    leverage >= 40 ? { label: "Offensiv", color: BURNT } :
+    leverage >= 15 ? { label: "Moderat", color: "#eab308" } :
+    { label: "Konservativ", color: "#22c55e" };
 
   return (
     <div
@@ -140,15 +140,12 @@ export function FunnelLeverageDemo() {
           Dein Gewinn-Rechner
         </p>
         <motion.div
-          animate={{ scale: [1, 1.04, 1] }}
-          transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
-          className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest"
-          style={{
-            background: `${tier.color}20`,
-            border: `1px solid ${tier.color}55`,
-            color: tier.color,
-          }}
+          animate={{ opacity: [0.85, 1, 0.85] }}
+          transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+          className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.15em] font-semibold"
+          style={{ color: tier.color }}
         >
+          <span className="w-1 h-1 rounded-full" style={{ background: tier.color }} />
           {tier.label}
         </motion.div>
       </div>
@@ -205,7 +202,7 @@ export function FunnelLeverageDemo() {
             </span>
           </motion.div>
         </AnimatePresence>
-        <p className="text-[10px] uppercase tracking-widest mt-1" style={{ color: "var(--color-text-muted)" }}>
+        <p className="text-[10px] uppercase tracking-[0.2em] mt-1 font-semibold" style={{ color: "var(--color-text-muted)" }}>
           Hebel
         </p>
       </div>
@@ -283,21 +280,21 @@ export function FunnelLeverageDemo() {
 
         <div className="flex justify-between items-center text-sm">
           <span style={{ color: "var(--color-text-muted)" }}>
-            Bei <span style={{ color: "#22c55e" }}>+20%</span> Pump 🚀
+            Bei <span style={{ color: "#22c55e" }}>+20%</span> Move
           </span>
           <RollingNumber value={gain20} />
         </div>
 
         {/* Headline ROI */}
         <div
-          className="mt-4 p-3 rounded-lg text-center"
+          className="mt-4 p-4 rounded-lg text-center"
           style={{
-            background: `linear-gradient(135deg, ${BURNT}18 0%, transparent 100%)`,
+            background: `linear-gradient(135deg, ${BURNT}14 0%, transparent 100%)`,
             border: `1px solid ${BURNT}33`,
           }}
         >
-          <p className="text-[10px] uppercase tracking-widest mb-1" style={{ color: "var(--color-text-muted)" }}>
-            Aus €{fmtEUR(stake)} werden bei +10%
+          <p className="text-[10px] uppercase tracking-[0.2em] mb-2 font-semibold" style={{ color: "var(--color-text-muted)" }}>
+            Aus €{fmtEUR(stake)} bei +10% Move
           </p>
           <p
             style={{
@@ -313,8 +310,8 @@ export function FunnelLeverageDemo() {
           >
             €{fmtEUR(stake + gain10)}
           </p>
-          <p className="text-[10px] mt-1" style={{ color: "#22c55e" }}>
-            +{roiPct}% ROI
+          <p className="text-[10px] mt-1.5 uppercase tracking-widest font-semibold" style={{ color: "#22c55e" }}>
+            +{roiPct}% Rendite
           </p>
         </div>
 

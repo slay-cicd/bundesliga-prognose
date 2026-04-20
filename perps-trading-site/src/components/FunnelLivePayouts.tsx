@@ -94,19 +94,19 @@ export function FunnelLivePayouts() {
         style={{ borderBottom: `1px solid ${BURNT}18`, background: "#0d0d10" }}
       >
         <div className="flex items-center gap-2">
-          <span className="relative flex h-2 w-2" aria-hidden="true">
+          <span className="relative flex h-1.5 w-1.5" aria-hidden="true">
             <span
               className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-70"
               style={{ background: "#22c55e", animationDuration: "1.2s" }}
             />
-            <span className="relative inline-flex rounded-full h-2 w-2" style={{ background: "#22c55e" }} />
+            <span className="relative inline-flex rounded-full h-1.5 w-1.5" style={{ background: "#22c55e" }} />
           </span>
-          <span className="text-[10px] uppercase tracking-widest font-bold" style={{ color: "#22c55e" }}>
-            Live · Auszahlungen
+          <span className="text-[10px] uppercase tracking-[0.2em] font-semibold" style={{ color: "#22c55e" }}>
+            Live
           </span>
         </div>
-        <span className="text-[10px] uppercase tracking-wider" style={{ color: "var(--color-text-muted)" }}>
-          Heute
+        <span className="text-[10px] uppercase tracking-[0.2em] font-semibold" style={{ color: "var(--color-text-muted)" }}>
+          Letzte Auszahlungen
         </span>
       </div>
 
@@ -127,25 +127,26 @@ export function FunnelLivePayouts() {
             >
               <div className="flex items-center gap-3 min-w-0">
                 <div
-                  className="flex items-center justify-center w-9 h-9 rounded-full flex-shrink-0 text-[10px] font-black"
+                  className="flex items-center justify-center w-9 h-9 rounded-full flex-shrink-0 text-base flex-shrink-0"
                   style={{
-                    background: `${BURNT}18`,
-                    border: `1px solid ${BURNT}33`,
+                    border: `1px solid ${BURNT}44`,
                     color: BURNT,
                     fontFamily: SERIF,
+                    fontStyle: "italic",
+                    fontWeight: 300,
                   }}
                 >
                   {p.name.charAt(0)}
                 </div>
                 <div className="min-w-0">
                   <p className="text-sm font-semibold truncate" style={{ color: "#e5e5e7" }}>
-                    {p.name}{" "}
+                    {p.name}
                     <span className="font-normal" style={{ color: "var(--color-text-muted)" }}>
-                      · {p.city}
+                      {" "}· {p.city}
                     </span>
                   </p>
-                  <p className="text-[11px]" style={{ color: "var(--color-text-muted)" }}>
-                    {p.asset} · {p.lev}× Hebel · {p.ago}
+                  <p className="text-[11px] mt-0.5" style={{ color: "var(--color-text-muted)" }}>
+                    {p.asset} · {p.lev}× · {p.ago}
                   </p>
                 </div>
               </div>
