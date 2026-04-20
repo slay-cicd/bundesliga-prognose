@@ -1,25 +1,45 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { cn } from "@/lib/utils";
+
+const SERIF = "var(--font-cormorant, Georgia, serif)";
+const BURNT = "#C4622D";
 
 interface TradingPanelProps {
   upOdds: number;
   downOdds: number;
+  /** "perp" = perpetual contract (leverage trade); otherwise binary short-term */
+  mode?: "perp" | "binary";
+  maxLeverage?: number;
   onTrade?: () => void;
 }
 
-const quickAmounts = [1, 5, 10, 100];
+const quickAmounts = [10, 50, 100, 250];
 
-export function TradingPanel({ upOdds, downOdds, onTrade }: TradingPanelProps) {
+export function TradingPanel({
+  upOdds,
+  downOdds,
+  mode = "binary",
+  maxLeverage = 100,
+  onTrade,
+}: TradingPanelProps) {
   const [direction, setDirection] = useState<"up" | "down">("up");
   const [amount, setAmount] = useState("");
+  const [leverage, setLeverage] = useState(25);
   const [showConfirm, setShowConfirm] = useState(false);
+  const prefersReduced = useReducedMotion();
 
   const numAmount = parseFloat(amount) || 0;
   const odds = direction === "up" ? upOdds : downOdds;
-  const payout = numAmount > 0 ? ((numAmount / odds) * 100).toFixed(2) : "0.00";
+
+  // binary payout: stake / odds × 100
+  const binaryPayout = numAmount > 0 ? ((numAmount / odds) * 100).toFixed(2) : "0.00";
+  // perp payout preview: stake × leverage × 5% move
+  const perpPositionSize = numAmount * leverage;
+  const perpGainAt5 = (perpPositionSize * 0.05).toFixed(0);
+  const perpGainAt10 = (perpPositionSize * 0.1).toFixed(0);
 
   function handleQuickAdd(val: number) {
     setAmount((prev) => {
@@ -33,39 +53,85 @@ export function TradingPanel({ upOdds, downOdds, onTrade }: TradingPanelProps) {
     onTrade?.();
   }
 
+  const isPerp = mode === "perp";
+
   return (
-    <div className="bg-surface-1 rounded-xl border border-border p-5">
+    <div
+      className="rounded-2xl p-5"
+      style={{
+        background: "linear-gradient(180deg, #131315 0%, #0d0d0f 100%)",
+        border: `1px solid ${BURNT}22`,
+        boxShadow: `0 0 0 1px ${BURNT}0d, 0 18px 50px -20px ${BURNT}22`,
+      }}
+    >
+      <p
+        className="text-[10px] uppercase tracking-widest mb-4 font-bold"
+        style={{ color: BURNT }}
+      >
+        {isPerp ? "Position eröffnen · Perpetual" : "Position eröffnen"}
+      </p>
+
       {/* Direction buttons */}
       <div className="flex gap-2 mb-5">
         <button
           onClick={() => setDirection("up")}
           className={cn(
-            "flex-1 py-3 rounded-lg font-semibold text-sm transition-all",
-            direction === "up"
-              ? "bg-up text-white"
-              : "bg-surface-2 text-text-secondary border border-border hover:border-up hover:text-up"
+            "flex-1 py-3 rounded-xl font-bold text-sm transition-all"
           )}
+          style={
+            direction === "up"
+              ? {
+                  background: "#22c55e",
+                  color: "#fff",
+                  boxShadow: "0 0 22px rgba(34,197,94,0.35)",
+                }
+              : {
+                  background: "#18181b",
+                  color: "var(--color-text-secondary)",
+                  border: "1px solid #2a2a2d",
+                }
+          }
         >
-          Hoch {upOdds}¢
+          {isPerp ? "Long ↑" : `Hoch ${upOdds}¢`}
         </button>
         <button
           onClick={() => setDirection("down")}
           className={cn(
-            "flex-1 py-3 rounded-lg font-semibold text-sm transition-all",
-            direction === "down"
-              ? "bg-down text-white"
-              : "bg-surface-2 text-text-secondary border border-border hover:border-down hover:text-down"
+            "flex-1 py-3 rounded-xl font-bold text-sm transition-all"
           )}
+          style={
+            direction === "down"
+              ? {
+                  background: "#ef4444",
+                  color: "#fff",
+                  boxShadow: "0 0 22px rgba(239,68,68,0.35)",
+                }
+              : {
+                  background: "#18181b",
+                  color: "var(--color-text-secondary)",
+                  border: "1px solid #2a2a2d",
+                }
+          }
         >
-          Runter {downOdds}¢
+          {isPerp ? "Short ↓" : `Runter ${downOdds}¢`}
         </button>
       </div>
 
       {/* Amount input */}
       <div className="mb-3">
-        <label className="text-xs text-text-muted mb-1.5 block">Betrag</label>
+        <label
+          className="text-[10px] uppercase tracking-widest mb-1.5 block font-semibold"
+          style={{ color: "var(--color-text-muted)" }}
+        >
+          Einsatz
+        </label>
         <div className="relative">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted text-sm">€</span>
+          <span
+            className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-semibold"
+            style={{ color: "var(--color-text-muted)" }}
+          >
+            €
+          </span>
           <input
             type="number"
             value={amount}
@@ -73,7 +139,15 @@ export function TradingPanel({ upOdds, downOdds, onTrade }: TradingPanelProps) {
             placeholder="0.00"
             min="0"
             step="0.01"
-            className="w-full bg-surface-2 border border-border rounded-lg pl-7 pr-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent"
+            className="w-full rounded-xl pl-8 pr-4 py-3 text-base font-bold tabular-nums outline-none transition-all"
+            style={{
+              background: "#18181b",
+              border: "1px solid #2a2a2d",
+              color: "#e5e5e7",
+              colorScheme: "dark",
+            }}
+            onFocus={(e) => (e.currentTarget.style.borderColor = BURNT)}
+            onBlur={(e) => (e.currentTarget.style.borderColor = "#2a2a2d")}
           />
         </div>
       </div>
@@ -84,69 +158,225 @@ export function TradingPanel({ upOdds, downOdds, onTrade }: TradingPanelProps) {
           <button
             key={val}
             onClick={() => handleQuickAdd(val)}
-            className="flex-1 py-1.5 text-xs font-medium bg-surface-2 hover:bg-surface-3 border border-border rounded-md text-text-secondary transition-colors"
+            className="flex-1 py-1.5 text-[11px] font-bold rounded-lg transition-all"
+            style={{
+              background: "#18181b",
+              border: "1px solid #2a2a2d",
+              color: "var(--color-text-secondary)",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = `${BURNT}66`;
+              e.currentTarget.style.color = BURNT;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = "#2a2a2d";
+              e.currentTarget.style.color = "var(--color-text-secondary)";
+            }}
           >
             +€{val}
           </button>
         ))}
         <button
-          onClick={() => setAmount("250")}
-          className="flex-1 py-1.5 text-xs font-medium bg-surface-2 hover:bg-surface-3 border border-border rounded-md text-text-secondary transition-colors"
+          onClick={() => setAmount("1000")}
+          className="flex-1 py-1.5 text-[11px] font-bold rounded-lg transition-all"
+          style={{
+            background: "#18181b",
+            border: `1px solid ${BURNT}55`,
+            color: BURNT,
+          }}
         >
           Max
         </button>
       </div>
 
+      {/* Leverage slider (perp only) */}
+      {isPerp && (
+        <div className="mb-5">
+          <div className="flex items-center justify-between mb-2">
+            <label
+              className="text-[10px] uppercase tracking-widest font-semibold"
+              style={{ color: "var(--color-text-muted)" }}
+            >
+              Hebel
+            </label>
+            <span
+              className="text-sm font-bold tabular-nums"
+              style={{
+                fontFamily: SERIF,
+                fontStyle: "italic",
+                color: BURNT,
+              }}
+            >
+              {leverage}×
+            </span>
+          </div>
+          <input
+            type="range"
+            min={1}
+            max={maxLeverage}
+            value={leverage}
+            onChange={(e) => setLeverage(Number(e.target.value))}
+            className="w-full"
+            style={{ accentColor: BURNT }}
+          />
+          <div
+            className="flex justify-between text-[9px] mt-1 font-semibold"
+            style={{ color: "var(--color-text-muted)" }}
+          >
+            <span>1×</span>
+            <span>{Math.floor(maxLeverage / 2)}×</span>
+            <span style={{ color: "#ef4444" }}>{maxLeverage}×</span>
+          </div>
+        </div>
+      )}
+
       {/* Payout preview */}
-      <div className="bg-surface-2 rounded-lg p-3 mb-4">
+      <div
+        className="rounded-xl p-3.5 mb-4 space-y-2"
+        style={{
+          background: "linear-gradient(180deg, #18181b 0%, #111114 100%)",
+          border: `1px solid ${BURNT}18`,
+        }}
+      >
         <div className="flex justify-between text-xs">
-          <span className="text-text-muted">Richtung</span>
-          <span className={direction === "up" ? "text-up font-medium" : "text-down font-medium"}>
-            {direction === "up" ? "Hoch ↑" : "Runter ↓"}
+          <span style={{ color: "var(--color-text-muted)" }}>Richtung</span>
+          <span
+            className="font-bold"
+            style={{
+              color: direction === "up" ? "#22c55e" : "#ef4444",
+            }}
+          >
+            {isPerp
+              ? direction === "up"
+                ? "Long ↑"
+                : "Short ↓"
+              : direction === "up"
+              ? "Hoch ↑"
+              : "Runter ↓"}
           </span>
         </div>
-        <div className="flex justify-between text-xs mt-1.5">
-          <span className="text-text-muted">Kurs</span>
-          <span className="text-text-primary">{odds}¢</span>
-        </div>
-        <div className="flex justify-between text-xs mt-1.5">
-          <span className="text-text-muted">Mögliche Auszahlung</span>
-          <span className="text-text-primary font-semibold">€{payout}</span>
-        </div>
+
+        {isPerp ? (
+          <>
+            <div className="flex justify-between text-xs">
+              <span style={{ color: "var(--color-text-muted)" }}>Positionsgröße</span>
+              <span className="font-bold tabular-nums" style={{ color: BURNT }}>
+                €{perpPositionSize.toLocaleString("de-DE", { maximumFractionDigits: 0 })}
+              </span>
+            </div>
+            <div className="h-px" style={{ background: `${BURNT}22` }} />
+            <div className="flex justify-between text-xs">
+              <span style={{ color: "var(--color-text-muted)" }}>
+                Gewinn bei <span style={{ color: "#22c55e" }}>+5%</span>
+              </span>
+              <span className="font-bold tabular-nums" style={{ color: "#22c55e" }}>
+                +€{Number(perpGainAt5).toLocaleString("de-DE")}
+              </span>
+            </div>
+            <div className="flex justify-between text-xs">
+              <span style={{ color: "var(--color-text-muted)" }}>
+                Gewinn bei <span style={{ color: "#22c55e" }}>+10%</span>
+              </span>
+              <span className="font-bold tabular-nums" style={{ color: "#22c55e" }}>
+                +€{Number(perpGainAt10).toLocaleString("de-DE")}
+              </span>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="flex justify-between text-xs">
+              <span style={{ color: "var(--color-text-muted)" }}>Kurs</span>
+              <span className="font-semibold tabular-nums" style={{ color: "#e5e5e7" }}>
+                {odds}¢
+              </span>
+            </div>
+            <div className="h-px" style={{ background: `${BURNT}22` }} />
+            <div className="flex justify-between items-center">
+              <span className="text-xs" style={{ color: "var(--color-text-muted)" }}>
+                Mögliche Auszahlung
+              </span>
+              <span
+                className="font-bold tabular-nums text-base"
+                style={{
+                  fontFamily: SERIF,
+                  fontStyle: "italic",
+                  color: "#22c55e",
+                }}
+              >
+                €{binaryPayout}
+              </span>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Trade button */}
       {!showConfirm ? (
-        <button
+        <motion.button
           onClick={handleTrade}
           disabled={numAmount <= 0}
-          className={cn(
-            "w-full py-3 rounded-lg font-semibold text-sm transition-all",
+          whileHover={prefersReduced || numAmount <= 0 ? undefined : { scale: 1.01 }}
+          whileTap={{ scale: 0.99 }}
+          className="w-full py-3.5 rounded-xl font-bold text-sm transition-all"
+          style={
             numAmount > 0
-              ? "bg-accent hover:bg-accent-hover text-white"
-              : "bg-surface-3 text-text-muted cursor-not-allowed"
-          )}
+              ? {
+                  background: BURNT,
+                  color: "#fff",
+                  boxShadow: `0 0 0 1px ${BURNT}, 0 8px 24px -6px ${BURNT}88`,
+                }
+              : {
+                  background: "#18181b",
+                  color: "var(--color-text-muted)",
+                  border: "1px solid #2a2a2d",
+                  cursor: "not-allowed",
+                }
+          }
+          onMouseEnter={(e) => {
+            if (numAmount > 0) e.currentTarget.style.background = "#b0561f";
+          }}
+          onMouseLeave={(e) => {
+            if (numAmount > 0) e.currentTarget.style.background = BURNT;
+          }}
         >
-          Trade ausführen
-        </button>
+          {numAmount > 0 ? `Position eröffnen · €${numAmount.toLocaleString("de-DE")}` : "Einsatz eingeben"}
+        </motion.button>
       ) : (
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
+          initial={prefersReduced ? false : { opacity: 0, scale: 0.95, y: 6 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
           className="rounded-xl p-4 text-center"
-          style={{ background: "rgba(196,98,45,0.08)", border: "1px solid rgba(196,98,45,0.25)" }}
+          style={{
+            background:
+              "linear-gradient(135deg, rgba(196,98,45,0.12) 0%, rgba(34,197,94,0.05) 100%)",
+            border: `1px solid ${BURNT}44`,
+          }}
         >
-          <p className="text-sm font-semibold text-text-primary mb-1">Bereit für echtes Trading?</p>
-          <p className="text-xs text-text-secondary mb-3">
-            Erstelle jetzt deinen Account und starte in unter 60 Sekunden.
+          <p
+            className="text-base mb-1"
+            style={{
+              fontFamily: SERIF,
+              fontStyle: "italic",
+              fontWeight: 400,
+              color: "#e5e5e7",
+            }}
+          >
+            Bereit für echtes Trading?
+          </p>
+          <p className="text-xs mb-3" style={{ color: "var(--color-text-muted)" }}>
+            Account erstellen in unter 60 Sekunden
           </p>
           <a
             href="/registrierung"
             data-event="register_click"
-            className="inline-block w-full py-2.5 text-white text-sm font-semibold rounded-lg transition-colors"
-            style={{ backgroundColor: "#C4622D" }}
+            className="block w-full py-2.5 text-white text-sm font-bold rounded-lg transition-all"
+            style={{
+              background: BURNT,
+              boxShadow: `0 0 0 1px ${BURNT}, 0 4px 16px -4px ${BURNT}88`,
+            }}
           >
-            Jetzt registrieren
+            Jetzt registrieren →
           </a>
         </motion.div>
       )}
