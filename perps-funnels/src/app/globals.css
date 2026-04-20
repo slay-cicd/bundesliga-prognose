@@ -1,0 +1,110 @@
+@import "tailwindcss";
+
+@theme inline {
+  /* Fonts */
+  --font-sans: var(--font-dm-sans), system-ui, -apple-system, sans-serif;
+  --font-display: var(--font-cormorant), Georgia, serif;
+  --font-mono: "SF Mono", "Fira Code", "Cascadia Code", monospace;
+
+  /* Dark surface palette (aggressive) */
+  --color-surface-0: #0a0a0b;
+  --color-surface-1: #111113;
+  --color-surface-2: #18181b;
+  --color-surface-3: #222225;
+  --color-border: #2a2a2d;
+  --color-border-light: #383838;
+
+  /* Text */
+  --color-text-primary: #e8e8ea;
+  --color-text-secondary: #888890;
+  --color-text-muted: #55555a;
+
+  /* Aggressive accent — mint teal */
+  --color-mint: #7fe5d6;
+  --color-mint-dim: color-mix(in srgb, #7fe5d6 12%, transparent);
+
+  /* Directional */
+  --color-up: #22c55e;
+  --color-up-dim: color-mix(in srgb, #22c55e 12%, transparent);
+  --color-down: #ef4444;
+  --color-down-dim: color-mix(in srgb, #ef4444 12%, transparent);
+
+  /* Professional */
+  --color-cream: #f5f3ef;
+  --color-charcoal: #1a1a1a;
+  --color-burnt: #c4622d;
+  --color-burnt-dim: color-mix(in srgb, #c4622d 10%, transparent);
+}
+
+:root {
+  --background: #0a0a0b;
+  --foreground: #e8e8ea;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #111113;
+}
+::-webkit-scrollbar-thumb {
+  background: #2a2a2d;
+  border-radius: 3px;
+}
+
+input,
+select,
+textarea {
+  color-scheme: dark;
+}
+
+/* Professional funnel: override color scheme for inputs */
+[data-funnel="professional"] input,
+[data-funnel="professional"] select,
+[data-funnel="professional"] textarea {
+  color-scheme: light;
+}
+
+/* Ticker scroll animation */
+@keyframes ticker-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Pulse for live indicator */
+@keyframes live-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* Kinetic word reveal */
+@keyframes word-up {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Number flicker */
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
