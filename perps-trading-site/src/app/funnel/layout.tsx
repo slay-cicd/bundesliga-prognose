@@ -1,40 +1,17 @@
 import type { Metadata } from "next";
-import { Instrument_Serif, Geist } from "next/font/google";
-
-const instrumentSerif = Instrument_Serif({
-  subsets: ["latin"],
-  weight: "400",
-  style: ["normal", "italic"],
-  variable: "--font-funnel-display",
-  display: "swap",
-});
-
-const geist = Geist({
-  subsets: ["latin"],
-  variable: "--font-funnel-sans",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
-  title: "Concorde — Perpetual Contracts",
+  title: "Concorde — €20 Startguthaben sichern",
   description:
-    "€20 Startguthaben. Perps auf Bitcoin, Gold, Aktien. Jetzt kostenlos registrieren.",
+    "Perpetual Contracts auf Bitcoin, Gold, Aktien & mehr. €20 Bonus, bis zu 100× Hebel. EU-reguliert.",
   robots: "noindex",
 };
 
-export default function FunnelLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function FunnelLayout({ children }: { children: React.ReactNode }) {
   return (
     <div
-      className={`${instrumentSerif.variable} ${geist.variable} min-h-screen`}
-      style={{
-        backgroundColor: "#F5F0E8",
-        color: "#1A1714",
-        fontFamily: "var(--font-funnel-sans), system-ui, sans-serif",
-      }}
+      className="min-h-screen"
+      style={{ backgroundColor: "#0a0a0b", color: "#e5e5e7" }}
     >
       {children}
     </div>
