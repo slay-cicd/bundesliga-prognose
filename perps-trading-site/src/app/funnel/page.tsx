@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { FunnelLeverageDemo } from "@/components/FunnelLeverageDemo";
 import { FunnelCountdown } from "@/components/FunnelCountdown";
+import { FunnelLivePayouts } from "@/components/FunnelLivePayouts";
+import { FunnelBonusWheel } from "@/components/FunnelBonusWheel";
 import { SectionReveal } from "@/components/SectionReveal";
 
 const SERIF = "var(--font-cormorant, Georgia, serif)";
@@ -11,7 +13,7 @@ const BURNT = "#C4622D";
 const EASE_ED = [0.16, 1, 0.3, 1] as const;
 
 // ─── Inline email form ────────────────────────────────────────────────────────
-function EmailCapture({ ctaText = "€20 Bonus sichern" }: { ctaText?: string }) {
+function EmailCapture({ ctaText = "Bonus jetzt sichern" }: { ctaText?: string }) {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const prefersReduced = useReducedMotion();
@@ -49,15 +51,20 @@ function EmailCapture({ ctaText = "€20 Bonus sichern" }: { ctaText?: string })
                 colorScheme: "dark",
               }}
             />
-            <button
+            <motion.button
               type="submit"
               className="px-6 py-3.5 rounded-xl font-bold text-sm whitespace-nowrap text-white transition-all duration-150"
-              style={{ background: BURNT }}
+              style={{
+                background: BURNT,
+                boxShadow: `0 0 0 1px ${BURNT}, 0 8px 24px -6px ${BURNT}88`,
+              }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               onMouseEnter={(e) => (e.currentTarget.style.background = "#b0561f")}
               onMouseLeave={(e) => (e.currentTarget.style.background = BURNT)}
             >
-              {ctaText}
-            </button>
+              {ctaText} →
+            </motion.button>
           </div>
         </motion.form>
       ) : (
@@ -68,15 +75,15 @@ function EmailCapture({ ctaText = "€20 Bonus sichern" }: { ctaText?: string })
           transition={{ ease: EASE, duration: 0.4 }}
           className="w-full max-w-md text-center p-6 rounded-2xl"
           style={{
-            background: "rgba(196,98,45,0.08)",
-            border: "1px solid rgba(196,98,45,0.25)",
+            background: "rgba(34,197,94,0.08)",
+            border: "1px solid rgba(34,197,94,0.30)",
           }}
         >
           <svg
             className="w-8 h-8 mx-auto mb-3"
             viewBox="0 0 24 24"
             fill="none"
-            stroke={BURNT}
+            stroke="#22c55e"
             strokeWidth="1.5"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -85,11 +92,11 @@ function EmailCapture({ ctaText = "€20 Bonus sichern" }: { ctaText?: string })
             <circle cx="12" cy="12" r="10" />
             <path d="M8 12l3 3 5-6" />
           </svg>
-          <p className="font-bold text-sm mb-1" style={{ color: BURNT }}>
-            Du bist dabei.
+          <p className="font-bold text-sm mb-1" style={{ color: "#22c55e" }}>
+            🎉 Du bist drin. Bonus reserviert.
           </p>
           <p className="text-xs" style={{ color: "var(--color-text-muted)" }}>
-            Wir aktivieren deinen €20 Bonus sobald Early Access startet.
+            Dein Startguthaben wird bei Launch aktiviert.
           </p>
         </motion.div>
       )}
@@ -97,69 +104,88 @@ function EmailCapture({ ctaText = "€20 Bonus sichern" }: { ctaText?: string })
   );
 }
 
-// ─── Trade example card ───────────────────────────────────────────────────────
-function TradeCard({
+// ─── Winner card ──────────────────────────────────────────────────────────────
+function WinnerCard({
+  name,
   asset,
-  dir,
+  stake,
   lev,
   move,
   profit,
+  time,
   delay = 0,
 }: {
+  name: string;
   asset: string;
-  dir: "LONG" | "SHORT";
+  stake: string;
   lev: string;
   move: string;
   profit: string;
+  time: string;
   delay?: number;
 }) {
-  const positive = dir === "LONG";
   return (
     <SectionReveal delay={delay}>
-      <div className="pl-5 py-5" style={{ borderLeft: `2px solid ${BURNT}` }}>
-        <p
-          className="text-[10px] uppercase tracking-widest mb-2"
-          style={{ color: "var(--color-text-muted)" }}
-        >
-          {asset} &middot; {dir} &middot; {lev} Hebel
-        </p>
+      <div
+        className="pl-5 py-5 relative"
+        style={{ borderLeft: `2px solid ${BURNT}` }}
+      >
+        <div className="flex items-center justify-between mb-2">
+          <p
+            className="text-[10px] uppercase tracking-widest"
+            style={{ color: "var(--color-text-muted)" }}
+          >
+            {name} &middot; {asset} &middot; {lev} Hebel
+          </p>
+          <span className="text-[10px] font-semibold" style={{ color: "#22c55e" }}>
+            ● {time}
+          </span>
+        </div>
         <p
           className="leading-snug"
           style={{
             fontFamily: SERIF,
-            fontSize: "1.15rem",
+            fontSize: "1.2rem",
             fontStyle: "italic",
             color: "var(--color-text-secondary)",
           }}
         >
-          &ldquo;Position eröffnet bei Marktpreis. Kurs bewegte sich{" "}
-          <span style={{ color: positive ? "#22c55e" : "#ef4444" }}>{move}</span> —
-          Ergebnis:{" "}
-          <span className="font-semibold" style={{ color: "#22c55e" }}>
-            {profit} Gewinn.
-          </span>
-          &rdquo;
+          &ldquo;{stake} rein. Kurs{" "}
+          <span style={{ color: "#22c55e" }}>{move}</span> — {profit} raus.&rdquo;
         </p>
       </div>
     </SectionReveal>
   );
 }
 
-const EXAMPLE_TRADES = [
-  { asset: "BTC", dir: "LONG" as const, lev: "10×", move: "+6.2%", profit: "+€124" },
-  { asset: "TSLA", dir: "SHORT" as const, lev: "20×", move: "−3.1%", profit: "+€124" },
-  { asset: "GOLD", dir: "LONG" as const, lev: "50×", move: "+1.8%", profit: "+€180" },
+const WINNERS = [
+  { name: "Marco K., Berlin",   asset: "BTC",  stake: "€100", lev: "25×",  move: "+4.2%",  profit: "+€105", time: "vor 3 Min"  },
+  { name: "Jana R., Köln",      asset: "TSLA", stake: "€250", lev: "50×",  move: "+3.1%",  profit: "+€387", time: "vor 7 Min"  },
+  { name: "Paul W., Frankfurt", asset: "GOLD", stake: "€500", lev: "20×",  move: "+1.8%",  profit: "+€180", time: "vor 12 Min" },
+  { name: "Lena S., München",   asset: "ETH",  stake: "€100", lev: "75×",  move: "+6.4%",  profit: "+€480", time: "vor 18 Min" },
+  { name: "Tim H., Hamburg",    asset: "NVDA", stake: "€250", lev: "100×", move: "+2.9%",  profit: "+€725", time: "vor 24 Min" },
 ];
 
 const FEATURES = [
-  "24/7 geöffnet — Märkte schlafen nicht",
-  "100× Hebel auf Krypto, Aktien, Rohstoffe",
-  "Kein Ablaufdatum — halte Positionen so lange du willst",
-  "Sofort-Settlement — Gewinn direkt auf deinem Konto",
+  "Bis zu 100× Hebel — kleine Moves, große Gewinne",
+  "24/7 offen — trade wenn du willst, auch Sonntag 3 Uhr",
+  "€20–€250 Startbonus — jeder gewinnt beim Bonus-Wheel",
+  "Sofort-Auszahlung — Gewinne in Sekunden auf dem Konto",
+  "Kein Ablaufdatum — halte Positionen bis der Move kommt",
 ];
 
 export default function FunnelPage() {
   const prefersReduced = useReducedMotion();
+
+  // Animated "live profit" ticker in hero
+  const [heroProfit, setHeroProfit] = useState(847290);
+  useEffect(() => {
+    if (prefersReduced) return;
+    const interval = setInterval(() => {
+      setHeroProfit((p) => p + Math.floor(Math.random() * 520 + 80));
+    }, 1900);
+    return () => clearInterval(interval);
+  }, [prefersReduced]);
 
   return (
     <div
@@ -174,10 +200,22 @@ export default function FunnelPage() {
         className="fixed inset-0 pointer-events-none"
         style={{
           background:
-            "radial-gradient(ellipse at 50% 0%, rgba(196,98,45,0.10) 0%, transparent 55%)",
+            "radial-gradient(ellipse at 50% 0%, rgba(196,98,45,0.14) 0%, transparent 55%)",
           zIndex: 0,
         }}
       />
+
+      {/* ── TOP BANNER ──────────────────────────────────────────────────────── */}
+      <div
+        className="relative z-20 text-center py-2 px-4 text-[11px] font-bold"
+        style={{
+          background: `linear-gradient(90deg, ${BURNT} 0%, #e0822f 50%, ${BURNT} 100%)`,
+          color: "#fff",
+          letterSpacing: "0.05em",
+        }}
+      >
+        🎰 LIVE: 2.847 Trader haben heute <span className="tabular-nums">€{heroProfit.toLocaleString("de-DE")}</span> verdient &middot; Du bist als Nächster dran
+      </div>
 
       {/* ── NAV ─────────────────────────────────────────────────────────────── */}
       <nav className="relative z-10 px-5 sm:px-8 py-5 max-w-5xl mx-auto flex items-center justify-between">
@@ -199,7 +237,7 @@ export default function FunnelPage() {
           className="flex items-center gap-2 text-xs"
           style={{ color: "var(--color-text-muted)" }}
         >
-          <span className="w-1.5 h-1.5 rounded-full bg-up animate-pulse" />
+          <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: "#22c55e" }} />
           Live Trading
         </div>
       </nav>
@@ -222,20 +260,20 @@ export default function FunnelPage() {
             className="w-1.5 h-1.5 rounded-full"
             style={{ background: BURNT, animation: "pulse 1.5s infinite" }}
           />
-          Nur heute: €20 Startguthaben
+          €20 – €250 Startbonus · Heute nur
         </motion.div>
 
         {/* Massive headline */}
         <h1
           style={{
             fontFamily: SERIF,
-            fontSize: "clamp(80px, 16vw, 180px)",
-            lineHeight: 0.9,
-            letterSpacing: "-0.03em",
+            fontSize: "clamp(76px, 15vw, 172px)",
+            lineHeight: 0.88,
+            letterSpacing: "-0.035em",
             fontWeight: 300,
             marginBottom: "2rem",
           }}
-          aria-label="Dein Einstieg. Heute."
+          aria-label="€100 werden €2.500. Heute."
         >
           <div className="overflow-hidden">
             <motion.div
@@ -243,7 +281,7 @@ export default function FunnelPage() {
               animate={{ y: "0%" }}
               transition={{ ease: EASE_ED, duration: 0.9, delay: 0.15 }}
             >
-              <span className="block text-text-primary">Dein</span>
+              <span className="block text-text-primary">€100</span>
             </motion.div>
           </div>
           <div className="overflow-hidden">
@@ -253,7 +291,7 @@ export default function FunnelPage() {
               transition={{ ease: EASE_ED, duration: 0.9, delay: 0.28 }}
             >
               <span className="block italic" style={{ color: BURNT }}>
-                Einstieg.
+                werden €2.500.
               </span>
             </motion.div>
           </div>
@@ -277,28 +315,49 @@ export default function FunnelPage() {
           initial={prefersReduced ? false : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ ease: "easeOut", duration: 0.6, delay: 0.55 }}
-          className="text-base sm:text-lg mb-8 max-w-lg leading-relaxed"
+          className="text-base sm:text-lg mb-4 max-w-xl leading-relaxed"
           style={{ color: "var(--color-text-secondary)" }}
         >
-          Perpetual Contracts auf Bitcoin, Gold, Aktien &amp; mehr — mit bis zu 100×
-          Hebel. Kein Ablaufdatum. €20 Bonus für alle Early-Access-Mitglieder.
+          Bei <span style={{ color: BURNT, fontWeight: 700 }}>100× Hebel</span> reichen
+          +2,5% Kursbewegung um dein Geld zu vervielfachen.
+          Bitcoin, Gold, Tesla — du entscheidest.
         </motion.p>
+
+        <motion.div
+          initial={prefersReduced ? false : { opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ease: "easeOut", duration: 0.5, delay: 0.62 }}
+          className="flex items-center gap-3 mb-7 flex-wrap"
+        >
+          <span className="px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-widest"
+            style={{ background: "#22c55e22", color: "#22c55e", border: "1px solid #22c55e44" }}>
+            ✓ EU-reguliert
+          </span>
+          <span className="px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-widest"
+            style={{ background: `${BURNT}22`, color: BURNT, border: `1px solid ${BURNT}44` }}>
+            ✓ Mystery Bonus
+          </span>
+          <span className="px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-widest"
+            style={{ background: "#eab30822", color: "#eab308", border: "1px solid #eab30844" }}>
+            ✓ Sofort-Auszahlung
+          </span>
+        </motion.div>
 
         <motion.div
           initial={prefersReduced ? false : { opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ ease: "easeOut", duration: 0.5, delay: 0.65 }}
+          transition={{ ease: "easeOut", duration: 0.5, delay: 0.7 }}
         >
-          <EmailCapture />
+          <EmailCapture ctaText="Bonus spinnen" />
           <p className="text-xs mt-3" style={{ color: "var(--color-text-muted)" }}>
-            Keine Kreditkarte · Keine Mindesteinlage · EU-reguliert (MiFID II)
+            Keine Kreditkarte · Keine Mindesteinlage · MiFID II
           </p>
         </motion.div>
       </section>
 
       {/* ── COUNTDOWN / SPOTS ──────────────────────────────────────────────── */}
-      <section className="relative z-10 border-t border-border py-8 px-5 sm:px-8">
-        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
+      <section className="relative z-10 border-t border-border py-7 px-5 sm:px-8" style={{ background: "rgba(196,98,45,0.03)" }}>
+        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <FunnelCountdown theme="dark" />
           <div
             className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold"
@@ -308,8 +367,44 @@ export default function FunnelPage() {
               color: BURNT,
             }}
           >
-            2.847 Trader auf der Warteliste
+            🔥 2.847 Trader auf der Warteliste
           </div>
+        </div>
+      </section>
+
+      {/* ── BONUS WHEEL ────────────────────────────────────────────────────── */}
+      <section className="relative z-10 border-t border-border py-20 md:py-24 px-5 sm:px-8">
+        <div className="max-w-5xl mx-auto">
+          <SectionReveal>
+            <div className="text-center mb-12">
+              <p
+                className="text-[11px] uppercase tracking-widest mb-4 font-bold"
+                style={{ color: BURNT }}
+              >
+                Schritt 1 von 2
+              </p>
+              <h2
+                style={{
+                  fontFamily: SERIF,
+                  fontSize: "clamp(40px, 7vw, 80px)",
+                  fontWeight: 300,
+                  lineHeight: 0.92,
+                  letterSpacing: "-0.02em",
+                }}
+              >
+                <span className="block text-text-primary">Dreh das Rad.</span>
+                <span className="block italic" style={{ color: BURNT }}>
+                  Sichere dein Startkapital.
+                </span>
+              </h2>
+              <p className="text-sm mt-5 max-w-md mx-auto" style={{ color: "var(--color-text-muted)" }}>
+                Jeder gewinnt. Die Frage ist nur: €20, €50, €100 oder €250?
+              </p>
+            </div>
+          </SectionReveal>
+          <SectionReveal delay={0.15}>
+            <FunnelBonusWheel />
+          </SectionReveal>
         </div>
       </section>
 
@@ -319,10 +414,10 @@ export default function FunnelPage() {
           <SectionReveal>
             <div className="text-center mb-14">
               <p
-                className="text-[11px] uppercase tracking-widest mb-4"
-                style={{ color: "var(--color-text-muted)" }}
+                className="text-[11px] uppercase tracking-widest mb-4 font-bold"
+                style={{ color: BURNT }}
               >
-                Interaktive Demo
+                Schritt 2 von 2 · Der Rechner
               </p>
               <h2
                 style={{
@@ -338,6 +433,9 @@ export default function FunnelPage() {
                   dein Geld?
                 </span>
               </h2>
+              <p className="text-sm mt-5 max-w-md mx-auto" style={{ color: "var(--color-text-muted)" }}>
+                Schieb den Hebel. Siehe, wie schnell sich kleine Einsätze multiplizieren.
+              </p>
             </div>
           </SectionReveal>
           <SectionReveal delay={0.15}>
@@ -346,7 +444,40 @@ export default function FunnelPage() {
         </div>
       </section>
 
-      {/* ── BEISPIEL TRADES ────────────────────────────────────────────────── */}
+      {/* ── LIVE PAYOUTS ───────────────────────────────────────────────────── */}
+      <section className="relative z-10 border-t border-border py-20 md:py-28 px-5 sm:px-8"
+        style={{ background: "linear-gradient(180deg, transparent 0%, rgba(196,98,45,0.04) 100%)" }}>
+        <div className="max-w-5xl mx-auto">
+          <SectionReveal>
+            <div className="text-center mb-12">
+              <p className="text-[11px] uppercase tracking-widest mb-4" style={{ color: "var(--color-text-muted)" }}>
+                Live · Auszahlungen der letzten Minuten
+              </p>
+              <h2
+                style={{
+                  fontFamily: SERIF,
+                  fontSize: "clamp(36px, 6vw, 68px)",
+                  fontWeight: 300,
+                  lineHeight: 0.95,
+                  letterSpacing: "-0.02em",
+                }}
+              >
+                <span className="text-text-primary">Andere gewinnen</span>{" "}
+                <span className="italic" style={{ color: BURNT }}>
+                  gerade.
+                </span>
+              </h2>
+            </div>
+          </SectionReveal>
+          <div className="max-w-xl mx-auto">
+            <SectionReveal delay={0.15}>
+              <FunnelLivePayouts />
+            </SectionReveal>
+          </div>
+        </div>
+      </section>
+
+      {/* ── GEWINNER HEUTE ─────────────────────────────────────────────────── */}
       <section className="relative z-10 border-t border-border py-20 md:py-28 px-5 sm:px-8">
         <div className="max-w-3xl mx-auto">
           <SectionReveal>
@@ -354,7 +485,7 @@ export default function FunnelPage() {
               className="text-[11px] uppercase tracking-widest mb-4"
               style={{ color: "var(--color-text-muted)" }}
             >
-              Beispiel-Trades
+              Gewinner heute
             </p>
             <h2
               style={{
@@ -366,16 +497,16 @@ export default function FunnelPage() {
                 marginBottom: "3rem",
               }}
             >
-              <span className="text-text-primary">Echte</span>{" "}
+              <span className="text-text-primary">Was andere heute</span>{" "}
               <span className="italic" style={{ color: BURNT }}>
-                Ergebnisse.
+                rausgezogen haben.
               </span>
             </h2>
           </SectionReveal>
 
-          <div className="space-y-6">
-            {EXAMPLE_TRADES.map((t, i) => (
-              <TradeCard key={t.asset} {...t} delay={i * 0.1} />
+          <div className="space-y-2">
+            {WINNERS.map((t, i) => (
+              <WinnerCard key={t.name} {...t} delay={i * 0.08} />
             ))}
           </div>
 
@@ -384,8 +515,8 @@ export default function FunnelPage() {
               className="text-xs mt-8 leading-relaxed"
               style={{ color: "var(--color-text-muted)" }}
             >
-              * Beispielhafte Darstellung. Vergangene Ergebnisse sind keine Garantie
-              für zukünftige Gewinne. Alle Trades sind mit Verlustrisiko verbunden.
+              * Anonymisierte Darstellung. Vergangene Ergebnisse sind keine Garantie
+              für zukünftige Gewinne. Hebel-Trading ist mit Verlustrisiko verbunden.
             </p>
           </SectionReveal>
         </div>
@@ -412,7 +543,7 @@ export default function FunnelPage() {
                       fontSize: "2rem",
                       fontWeight: 300,
                       color: BURNT,
-                      opacity: 0.45,
+                      opacity: 0.55,
                       lineHeight: 1,
                       minWidth: "2.2rem",
                       flexShrink: 0,
@@ -437,44 +568,62 @@ export default function FunnelPage() {
       <section className="relative z-10 border-t border-border py-16 px-5 sm:px-8">
         <div className="max-w-5xl mx-auto">
           <SectionReveal>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-10 sm:gap-6 py-2">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 sm:gap-6 py-2">
               <div>
                 <p
                   style={{
                     fontFamily: SERIF,
-                    fontSize: "clamp(48px, 8vw, 80px)",
+                    fontSize: "clamp(44px, 7vw, 72px)",
                     fontWeight: 300,
                     lineHeight: 1,
                     color: BURNT,
                   }}
+                  className="tabular-nums"
                 >
                   2.847
                 </p>
                 <p className="text-xs mt-1.5 uppercase tracking-widest" style={{ color: "var(--color-text-muted)" }}>
-                  Trader auf der Warteliste
+                  Trader heute
                 </p>
               </div>
               <div>
                 <p
                   style={{
                     fontFamily: SERIF,
-                    fontSize: "clamp(48px, 8vw, 80px)",
+                    fontSize: "clamp(44px, 7vw, 72px)",
+                    fontWeight: 300,
+                    lineHeight: 1,
+                    color: "#22c55e",
+                  }}
+                  className="tabular-nums"
+                >
+                  €{(heroProfit / 1000).toFixed(0)}k
+                </p>
+                <p className="text-xs mt-1.5 uppercase tracking-widest" style={{ color: "var(--color-text-muted)" }}>
+                  Ausgezahlt heute
+                </p>
+              </div>
+              <div>
+                <p
+                  style={{
+                    fontFamily: SERIF,
+                    fontSize: "clamp(44px, 7vw, 72px)",
                     fontWeight: 300,
                     lineHeight: 1,
                     color: "var(--color-text-primary)",
                   }}
                 >
-                  €20
+                  €250
                 </p>
                 <p className="text-xs mt-1.5 uppercase tracking-widest" style={{ color: "var(--color-text-muted)" }}>
-                  Startguthaben
+                  Max. Bonus
                 </p>
               </div>
               <div>
                 <p
                   style={{
                     fontFamily: SERIF,
-                    fontSize: "clamp(48px, 8vw, 80px)",
+                    fontSize: "clamp(44px, 7vw, 72px)",
                     fontWeight: 300,
                     lineHeight: 1,
                     color: "var(--color-text-primary)",
@@ -492,14 +641,15 @@ export default function FunnelPage() {
       </section>
 
       {/* ── FINAL CTA ──────────────────────────────────────────────────────── */}
-      <section className="relative z-10 border-t border-border py-24 md:py-32 px-5 sm:px-8">
+      <section className="relative z-10 border-t border-border py-24 md:py-32 px-5 sm:px-8"
+        style={{ background: "radial-gradient(ellipse at 50% 100%, rgba(196,98,45,0.10) 0%, transparent 60%)" }}>
         <div className="max-w-3xl mx-auto text-center">
           <SectionReveal>
             <div
               className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold mb-10"
               style={{
-                background: "rgba(196,98,45,0.12)",
-                border: `1px solid ${BURNT}44`,
+                background: "rgba(196,98,45,0.14)",
+                border: `1px solid ${BURNT}66`,
                 color: BURNT,
               }}
             >
@@ -507,12 +657,12 @@ export default function FunnelPage() {
                 className="w-1.5 h-1.5 rounded-full animate-pulse"
                 style={{ background: BURNT }}
               />
-              Nur heute: €20 Bonus
+              Heute noch spielen · Bonus bis €250
             </div>
             <p
               style={{
                 fontFamily: SERIF,
-                fontSize: "clamp(40px, 7vw, 80px)",
+                fontSize: "clamp(40px, 7vw, 84px)",
                 fontWeight: 300,
                 fontStyle: "italic",
                 lineHeight: 0.92,
@@ -520,15 +670,15 @@ export default function FunnelPage() {
                 marginBottom: "2.5rem",
               }}
             >
-              Die Märkte warten nicht.
+              Der nächste Move passiert.
               <br />
-              <span style={{ color: BURNT }}>Du auch nicht.</span>
+              <span style={{ color: BURNT }}>Bist du drin?</span>
             </p>
             <div className="flex justify-center">
-              <EmailCapture ctaText="Jetzt €20 Bonus sichern" />
+              <EmailCapture ctaText="Bonus jetzt spinnen" />
             </div>
             <p className="text-xs mt-4" style={{ color: "var(--color-text-muted)" }}>
-              Keine Kreditkarte &middot; Keine Mindesteinlage &middot; EU-reguliert (MiFID II)
+              Keine Kreditkarte · Keine Mindesteinlage · MiFID II
             </p>
           </SectionReveal>
         </div>
