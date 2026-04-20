@@ -29,7 +29,11 @@ function fmt(item: TickerItem) {
   return item.price.toFixed(2);
 }
 
-export function FunnelMarketTicker() {
+interface Props {
+  theme?: "dark" | "cream";
+}
+
+export function FunnelMarketTicker({ theme = "dark" }: Props) {
   const [items, setItems] = useState<TickerItem[]>(SEED);
   const [flicker, setFlicker] = useState<number>(-1);
 
@@ -56,18 +60,39 @@ export function FunnelMarketTicker() {
 
   const doubled = [...items, ...items];
 
+  const C =
+    theme === "cream"
+      ? {
+          bg: "#EDE7DB",
+          borderBottom: "1px solid #DDD7CC",
+          fadeColor: "#EDE7DB",
+          symbol: "#A09890",
+          price: "#1A1714",
+          upColor: "#1C7A4B",
+          downColor: "#C44536",
+        }
+      : {
+          bg: "#111113",
+          borderBottom: "1px solid #2a2a2d",
+          fadeColor: "#111113",
+          symbol: "#888890",
+          price: "#e8e8ea",
+          upColor: "#7fe5d6",
+          downColor: "#ef4444",
+        };
+
   return (
     <div
       className="w-full overflow-hidden relative"
-      style={{ backgroundColor: "#111113", borderBottom: "1px solid #2a2a2d" }}
+      style={{ backgroundColor: C.bg, borderBottom: C.borderBottom }}
     >
       <div
         className="absolute left-0 top-0 bottom-0 w-8 pointer-events-none z-10"
-        style={{ background: "linear-gradient(to right, #111113, transparent)" }}
+        style={{ background: `linear-gradient(to right, ${C.fadeColor}, transparent)` }}
       />
       <div
         className="absolute right-0 top-0 bottom-0 w-8 pointer-events-none z-10"
-        style={{ background: "linear-gradient(to left, #111113, transparent)" }}
+        style={{ background: `linear-gradient(to left, ${C.fadeColor}, transparent)` }}
       />
       <div
         className="flex gap-8 py-2.5 px-6 whitespace-nowrap"
@@ -79,19 +104,19 @@ export function FunnelMarketTicker() {
             className="flex items-center gap-2 text-xs shrink-0"
             style={{
               fontFamily: "var(--font-mono, 'SF Mono', monospace)",
-              opacity: flicker === i % SEED.length ? 0.6 : 1,
+              opacity: flicker === i % SEED.length ? 0.5 : 1,
               transition: "opacity 0.15s",
             }}
           >
-            <span style={{ color: "#888890", fontWeight: 500, letterSpacing: "0.05em" }}>
+            <span style={{ color: C.symbol, fontWeight: 500, letterSpacing: "0.05em" }}>
               {item.symbol}
             </span>
-            <span style={{ color: "#e8e8ea" }} className="tabular-nums">
+            <span style={{ color: C.price }} className="tabular-nums">
               {fmt(item)}
             </span>
             <span
               className="text-[10px] font-semibold tabular-nums"
-              style={{ color: item.change >= 0 ? "#7fe5d6" : "#ef4444" }}
+              style={{ color: item.change >= 0 ? C.upColor : C.downColor }}
             >
               {item.change >= 0 ? "+" : ""}
               {item.change.toFixed(2)}%

@@ -1,16 +1,24 @@
 import type { Metadata } from "next";
-import { DM_Sans } from "next/font/google";
+import { Instrument_Serif, Geist } from "next/font/google";
 
-const dmSans = DM_Sans({
+const instrumentSerif = Instrument_Serif({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800", "900"],
+  weight: "400",
+  style: ["normal", "italic"],
+  variable: "--font-funnel-display",
+  display: "swap",
+});
+
+const geist = Geist({
+  subsets: ["latin"],
   variable: "--font-funnel-sans",
   display: "swap",
 });
 
 export const metadata: Metadata = {
   title: "Concorde — Perpetual Contracts",
-  description: "€20 Startguthaben. Perps auf Bitcoin, Gold, Aktien. Jetzt kostenlos registrieren.",
+  description:
+    "€20 Startguthaben. Perps auf Bitcoin, Gold, Aktien. Jetzt kostenlos registrieren.",
   robots: "noindex",
 };
 
@@ -21,8 +29,12 @@ export default function FunnelLayout({
 }) {
   return (
     <div
-      className={`${dmSans.variable} min-h-screen bg-[#0a0a0b] text-[#e8e8ea]`}
-      style={{ fontFamily: "var(--font-funnel-sans), system-ui, sans-serif" }}
+      className={`${instrumentSerif.variable} ${geist.variable} min-h-screen`}
+      style={{
+        backgroundColor: "#F5F0E8",
+        color: "#1A1714",
+        fontFamily: "var(--font-funnel-sans), system-ui, sans-serif",
+      }}
     >
       {children}
     </div>

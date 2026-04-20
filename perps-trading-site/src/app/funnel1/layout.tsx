@@ -1,24 +1,16 @@
 import type { Metadata } from "next";
-import { DM_Sans, Cormorant_Garamond } from "next/font/google";
+import { Geist } from "next/font/google";
 
-const dmSans = DM_Sans({
+const geist = Geist({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-funnel-sans",
-  display: "swap",
-});
-
-const cormorant = Cormorant_Garamond({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  style: ["normal", "italic"],
-  variable: "--font-funnel-display",
+  variable: "--font-f1-sans",
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Concorde — Perpetual Contracts",
-  description: "Institutionelle Infrastruktur. Jetzt zugänglich. Perpetual Contracts auf allen Märkten.",
+  title: "Concorde — Institutionelles Trading",
+  description:
+    "Perpetual Contracts. Die Infrastruktur, die institutionelle Trader seit Jahren nutzen. Jetzt zugänglich.",
   robots: "noindex",
 };
 
@@ -29,11 +21,11 @@ export default function Funnel1Layout({
 }) {
   return (
     <div
-      className={`${dmSans.variable} ${cormorant.variable} min-h-screen`}
+      className={`${geist.variable} min-h-screen`}
       style={{
-        backgroundColor: "#f5f3ef",
-        color: "#1a1a1a",
-        fontFamily: "var(--font-funnel-sans), system-ui, sans-serif",
+        backgroundColor: "#FFFFFF",
+        color: "#0B0E1A",
+        fontFamily: "var(--font-f1-sans), system-ui, sans-serif",
       }}
     >
       {children}

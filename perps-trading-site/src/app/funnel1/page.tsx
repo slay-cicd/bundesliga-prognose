@@ -3,12 +3,49 @@
 import { useRef, useEffect, useState } from "react";
 import { motion, useReducedMotion, useInView } from "framer-motion";
 import { FunnelEmailForm } from "@/components/FunnelEmailForm";
+import { FunnelCountdown } from "@/components/FunnelCountdown";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
-const EASE_ED = [0.16, 1, 0.3, 1] as const; // slow editorial
+const EASE_SNAP = [0.16, 1, 0.3, 1] as const;
 
-// ─── Count-up ────────────────────────────────────────────────────────────────
-function CountUp({ to, suffix = "", duration = 1.4 }: { to: number; suffix?: string; duration?: number }) {
+// ─── Design tokens (public.com — crisp white + deep navy) ─────────────────
+const T = {
+  // backgrounds
+  heroBg: "#060A14",
+  heroBg2: "#0C1220",
+  bg: "#FFFFFF",
+  bgAlt: "#F5F7FB",
+  bgAlt2: "#EEF1F8",
+
+  // text
+  text: "#0B0E1A",
+  textMuted: "#677090",
+  textDim: "#9BA4BC",
+  heroText: "#EEF0F8",
+  heroMuted: "#4E5A78",
+
+  // borders
+  border: "#E1E5F0",
+  borderHero: "#1A2035",
+
+  // accent (indigo/purple)
+  indigo: "#4245E5",
+  indigoDim: "rgba(66,69,229,0.08)",
+  indigoMid: "rgba(66,69,229,0.18)",
+  indigoBright: "#5B5EF5",
+
+  // signal
+  up: "#08B87A",
+  upDim: "rgba(8,184,122,0.1)",
+  down: "#E84040",
+  downDim: "rgba(232,64,64,0.1)",
+
+  sans: "var(--font-f1-sans), system-ui, sans-serif",
+  mono: "'SF Mono', 'Fira Code', monospace",
+};
+
+// ─── Count-up component ────────────────────────────────────────────────────
+function CountUp({ to, suffix = "", duration = 1.2 }: { to: number; suffix?: string; duration?: number }) {
   const ref = useRef<HTMLSpanElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-40px" });
   const [value, setValue] = useState(0);
@@ -31,23 +68,7 @@ function CountUp({ to, suffix = "", duration = 1.4 }: { to: number; suffix?: str
   return <span ref={ref}>{value}{suffix}</span>;
 }
 
-// ─── Word-gate reveal ─────────────────────────────────────────────────────────
-function WordGate({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) {
-  const prefersReduced = useReducedMotion();
-  return (
-    <div className={`overflow-hidden ${className}`}>
-      <motion.div
-        initial={prefersReduced ? false : { y: "105%" }}
-        animate={{ y: "0%" }}
-        transition={{ ease: EASE_ED, duration: 0.85, delay }}
-      >
-        {children}
-      </motion.div>
-    </div>
-  );
-}
-
-// ─── Data ─────────────────────────────────────────────────────────────────────
+// ─── Data ──────────────────────────────────────────────────────────────────
 const COMPARISON = [
   { feature: "Handelszeiten", concorde: "24 / 7", traditional: "Mo–Fr, 9–17 Uhr" },
   { feature: "Hebel", concorde: "bis 100×", traditional: "bis 5×" },
@@ -65,418 +86,625 @@ const MARKETS = [
   { name: "Forex", examples: "EUR/USD · GBP/JPY", desc: "Deep-Liquidity FX Perpetuals." },
 ];
 
-const TRUST = [
-  { label: "MiFID II", title: "EU-reguliert", desc: "Vollständig lizenziert nach europäischen Standards. Transparente Compliance." },
-  { label: "Tier 1", title: "Segregierte Konten", desc: "Kundengelder strikt getrennt. Verwahrt bei Tier-1-Banken." },
-  { label: "256-bit", title: "Enterprise Security", desc: "Multi-Sig Cold Storage, 2FA-Pflicht und kontinuierliche Audits." },
+const FEATURES = [
+  {
+    n: "01",
+    title: "Kein Ablaufdatum",
+    desc: "Perpetuals verfallen nie. Trade so lange du willst, ohne Position wechseln zu müssen.",
+  },
+  {
+    n: "02",
+    title: "Bis zu 100× Hebel",
+    desc: "Steuere große Positionen mit kleinem Kapital. Hebel von 2× bis 100× frei wählbar.",
+  },
+  {
+    n: "03",
+    title: "Long & Short",
+    desc: "Profitiere von steigenden und fallenden Kursen. Beide Richtungen, jederzeit.",
+  },
+  {
+    n: "04",
+    title: "Sofort-Settlement",
+    desc: "Kein T+2 Warten. Gewinne werden direkt auf deinem Konto gutgeschrieben.",
+  },
+  {
+    n: "05",
+    title: "Alle Märkte",
+    desc: "Krypto, Aktien, Gold, Indizes, Forex — alles auf einer Plattform.",
+  },
 ];
 
-// ─── Style constants ──────────────────────────────────────────────────────────
-const C = {
-  cream: "#f5f3ef",
-  creamDark: "#f0ece6",
-  charcoal: "#1a1a1a",
-  muted: "#999",
-  dimmed: "#bbb",
-  border: "#e8e4dd",
-  borderMid: "#ddd",
-  borderDark: "#d6d0c8",
-  burnt: "#c4622d",
-  dark: "#1a1a1a",
-};
-
-const displayFont = "var(--font-funnel-display, Georgia, serif)";
-const bodyFont = "var(--font-funnel-sans, system-ui, sans-serif)";
+const TRUST = [
+  {
+    icon: (
+      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+      </svg>
+    ),
+    label: "MiFID II",
+    title: "EU-reguliert",
+    desc: "Vollständig lizenziert nach europäischen Standards. Transparente Compliance.",
+  },
+  {
+    icon: (
+      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <rect x="2" y="7" width="20" height="14" rx="2" />
+        <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
+      </svg>
+    ),
+    label: "Tier 1",
+    title: "Segregierte Konten",
+    desc: "Kundengelder strikt getrennt. Verwahrt bei Tier-1-Banken.",
+  },
+  {
+    icon: (
+      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <rect x="5" y="11" width="14" height="10" rx="2" />
+        <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+      </svg>
+    ),
+    label: "256-bit",
+    title: "Enterprise Security",
+    desc: "Multi-Sig Cold Storage, 2FA-Pflicht und kontinuierliche Audits.",
+  },
+];
 
 export default function Funnel1Page() {
   const prefersReduced = useReducedMotion();
 
   return (
-    <div
-      data-funnel="pro"
-      style={{ fontFamily: bodyFont, backgroundColor: C.cream, color: C.charcoal }}
-    >
-      {/* ─── NAV ─────────────────────────────────────────── */}
-      <nav className="px-6 sm:px-10 py-6 max-w-6xl mx-auto flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M2 18L10 6L14 12L22 4" stroke={C.charcoal} strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
-            <circle cx="22" cy="4" r="1.5" fill={C.charcoal} />
-          </svg>
-          <span className="font-semibold text-sm tracking-tight" style={{ fontFamily: bodyFont }}>Concorde</span>
-        </div>
-        <span className="text-[11px] tracking-wide hidden sm:block" style={{ color: C.muted }}>
-          EU-reguliert · Institutionelle Infrastruktur
-        </span>
-      </nav>
+    <div data-funnel="pro1" style={{ fontFamily: T.sans }}>
+      {/* ═══════════════════════════════════════════════════
+          DARK HERO (public.com — "Investing for those
+          who take it seriously")
+      ════════════════════════════════════════════════════ */}
+      <section style={{ backgroundColor: T.heroBg }}>
+        {/* Nav */}
+        <nav className="px-6 sm:px-10 pt-6 pb-0 max-w-5xl mx-auto flex items-center justify-between">
+          <motion.div
+            initial={prefersReduced ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ ease: EASE, duration: 0.5 }}
+            className="flex items-center gap-2"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M2 18L10 6L14 12L22 4" stroke={T.heroText} strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+              <circle cx="22" cy="4" r="1.5" fill={T.heroText} />
+            </svg>
+            <span className="text-sm font-semibold tracking-tight" style={{ color: T.heroText }}>
+              Concorde
+            </span>
+          </motion.div>
+          <motion.div
+            initial={prefersReduced ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ ease: EASE, duration: 0.5, delay: 0.1 }}
+            className="hidden sm:flex items-center gap-4 text-[11px]"
+            style={{ color: T.heroMuted }}
+          >
+            <span>EU-reguliert</span>
+            <span style={{ color: T.borderHero }}>·</span>
+            <span>Institutionelle Infrastruktur</span>
+          </motion.div>
+        </nav>
 
-      {/* ─── HERO ─────────────────────────────────────────── */}
-      <section
-        className="px-6 sm:px-10 pt-16 sm:pt-24 pb-28 max-w-6xl mx-auto"
-        style={{ background: `radial-gradient(ellipse at 80% 10%, rgba(196,98,45,0.045) 0%, transparent 55%)` }}
-      >
-        <div className="max-w-4xl">
+        {/* Hero content */}
+        <div className="px-6 sm:px-10 pt-16 sm:pt-24 pb-24 sm:pb-32 max-w-5xl mx-auto">
           <motion.p
             initial={prefersReduced ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ ease: EASE, duration: 0.6, delay: 0.1 }}
-            className="text-[11px] tracking-[0.18em] uppercase mb-10"
-            style={{ color: C.muted, fontFamily: bodyFont }}
+            transition={{ ease: EASE, duration: 0.5, delay: 0.12 }}
+            className="text-[10px] tracking-[0.22em] uppercase mb-8"
+            style={{ color: T.heroMuted }}
           >
             Concorde · Perpetual Contracts · Beta 2025
           </motion.p>
 
-          <h1
-            className="leading-none mb-10"
-            style={{ fontFamily: displayFont, fontSize: "clamp(72px, 12vw, 148px)", letterSpacing: "-0.02em" }}
-            aria-label="Perpetual Contracts."
-          >
-            <WordGate delay={0.15} className="block">
-              <span style={{ fontWeight: 300, color: C.charcoal }}>Perpetual</span>
-            </WordGate>
-            <WordGate delay={0.28} className="block">
-              <span style={{ fontWeight: 300, fontStyle: "italic", color: C.burnt }}>Contracts.</span>
-            </WordGate>
+          {/* BIG headline */}
+          <h1 className="mb-10" aria-label="Perps für die, die es ernst meinen.">
+            <div className="overflow-hidden">
+              <motion.span
+                initial={prefersReduced ? false : { y: "100%" }}
+                animate={{ y: "0%" }}
+                transition={{ ease: EASE_SNAP, duration: 0.75, delay: 0.18 }}
+                className="block"
+                style={{
+                  fontFamily: T.sans,
+                  fontWeight: 300,
+                  fontSize: "clamp(40px, 7vw, 80px)",
+                  letterSpacing: "-0.025em",
+                  lineHeight: 1.05,
+                  color: T.heroText,
+                }}
+              >
+                Perps für die,
+              </motion.span>
+            </div>
+            <div className="overflow-hidden">
+              <motion.span
+                initial={prefersReduced ? false : { y: "100%" }}
+                animate={{ y: "0%" }}
+                transition={{ ease: EASE_SNAP, duration: 0.75, delay: 0.3 }}
+                className="block"
+                style={{
+                  fontFamily: T.sans,
+                  fontWeight: 300,
+                  fontSize: "clamp(40px, 7vw, 80px)",
+                  letterSpacing: "-0.025em",
+                  lineHeight: 1.05,
+                  color: T.heroText,
+                }}
+              >
+                die es{" "}
+                <span style={{ fontWeight: 600, color: T.indigoBright }}>ernst meinen.</span>
+              </motion.span>
+            </div>
           </h1>
 
           <motion.p
-            initial={prefersReduced ? false : { opacity: 0, y: 18 }}
+            initial={prefersReduced ? false : { opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ ease: EASE, duration: 0.6, delay: 0.52 }}
-            className="text-lg sm:text-xl leading-relaxed max-w-xl mb-12"
-            style={{ color: "#666", fontFamily: bodyFont }}
+            transition={{ ease: EASE, duration: 0.6, delay: 0.48 }}
+            className="text-base sm:text-lg leading-relaxed max-w-lg mb-10"
+            style={{ color: T.heroMuted }}
           >
-            Die Infrastruktur, die institutionelle Trader seit Jahren nutzen.
-            Jetzt zugänglich — ohne Kompromisse.
+            Die Infrastruktur, die institutionelle Trader seit Jahren nutzen —
+            jetzt zugänglich. Ohne Kompromisse.
           </motion.p>
 
           <motion.div
-            initial={prefersReduced ? false : { opacity: 0, y: 16 }}
+            initial={prefersReduced ? false : { opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ ease: EASE, duration: 0.55, delay: 0.64 }}
+            transition={{ ease: EASE, duration: 0.55, delay: 0.58 }}
             className="max-w-md"
           >
-            <FunnelEmailForm variant="light" ctaText="Early Access anfragen" placeholder="Deine E-Mail-Adresse" />
-            <p className="text-[11px] mt-3" style={{ color: "#aaa", fontFamily: bodyFont }}>
-              Kostenlos. Keine Kreditkarte. Keine Verpflichtung.
-            </p>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ─── PULL QUOTE ───────────────────────────────────── */}
-      <section className="py-20 px-6 sm:px-10" style={{ backgroundColor: C.dark }}>
-        <div className="max-w-4xl mx-auto">
-          <motion.div
-            initial={prefersReduced ? false : { opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ ease: EASE_ED, duration: 0.8 }}
-            className="pl-8"
-            style={{ borderLeft: `2px solid ${C.burnt}` }}
-          >
-            <p
-              className="leading-tight mb-6"
-              style={{ fontFamily: displayFont, fontSize: "clamp(28px, 4vw, 48px)", fontStyle: "italic", fontWeight: 300, color: "#f5f3ef" }}
-            >
-              &ldquo;The first truly accessible perps venue in Europe.&rdquo;
-            </p>
-            <p className="text-xs tracking-widest uppercase" style={{ color: "#555", fontFamily: bodyFont }}>
-              — Concorde, 2025
-            </p>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ─── KINETIC STATS ────────────────────────────────── */}
-      <section className="px-6 sm:px-10 py-24 max-w-6xl mx-auto">
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-y-12 gap-x-8">
-          {[
-            { to: 24, suffix: "/7", label: "Handel rund um die Uhr" },
-            { to: 100, suffix: "×", label: "Maximaler Hebel" },
-            { to: 0, suffix: "s", label: "Settlement-Verzögerung" },
-            { to: null, symbol: "∞", label: "Kein Ablaufdatum" },
-          ].map((stat, i) => (
-            <motion.div
-              key={i}
-              initial={prefersReduced ? false : { opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-40px" }}
-              transition={{ ease: EASE_ED, duration: 0.7, delay: i * 0.1 }}
-              className="space-y-3"
-            >
-              <div
-                className="tabular-nums leading-none"
-                style={{ fontFamily: displayFont, fontSize: "clamp(52px, 8vw, 88px)", fontWeight: 300, color: C.charcoal, letterSpacing: "-0.02em" }}
-                aria-label={stat.label}
-              >
-                {stat.to !== null ? (
-                  <CountUp to={stat.to} suffix={stat.suffix} duration={1.2} />
-                ) : (
-                  <span style={{ color: C.burnt }}>{stat.symbol}</span>
-                )}
-              </div>
-              <p className="text-xs leading-snug" style={{ color: C.muted, fontFamily: bodyFont }}>
-                {stat.label}
-              </p>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* ─── EDITORIAL: WHAT ARE PERPS ────────────────────── */}
-      <section className="px-6 sm:px-10 py-20 border-t" style={{ borderColor: C.border, backgroundColor: C.creamDark }}>
-        <div className="max-w-6xl mx-auto">
-          <div className="grid sm:grid-cols-3 gap-12 items-start">
-            <motion.p
-              initial={prefersReduced ? false : { opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-60px" }}
-              transition={{ ease: EASE_ED, duration: 0.8 }}
-              className="sm:col-span-2 leading-tight"
-              style={{ fontFamily: displayFont, fontSize: "clamp(28px, 4.5vw, 52px)", fontWeight: 300, fontStyle: "italic", color: C.charcoal }}
-            >
-              Handle auf Kursbewegungen.
-              <br />Ohne das Asset zu besitzen.
-              <br />Rund um die Uhr.
-            </motion.p>
-            <motion.div
-              initial={prefersReduced ? false : { opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-60px" }}
-              transition={{ ease: EASE_ED, duration: 0.8, delay: 0.15 }}
-              className="space-y-4"
-              style={{ fontFamily: bodyFont }}
-            >
-              <p className="text-xs uppercase tracking-widest mb-5" style={{ color: "#aaa" }}>Was sind Perpetuals?</p>
-              <p className="leading-relaxed text-sm" style={{ color: "#555" }}>
-                Perpetual Contracts sind Derivate ohne Ablaufdatum. Du spekulierst auf den Preis
-                eines Assets — Long oder Short — mit einstellbarem Hebel. Kein Besitz, kein
-                Settlement-Datum, volle Kontrolle.
-              </p>
-              <p className="leading-relaxed text-sm" style={{ color: "#555" }}>
-                Im Gegensatz zu traditionellen Futures musst du keine Positionen vor Quartalsende
-                schließen. Du tradest wann du willst, so lange du willst.
-              </p>
-              <div className="pt-4 mt-2" style={{ borderTop: `1px solid ${C.borderMid}` }}>
-                <p className="text-[11px] uppercase tracking-widest" style={{ color: "#aaa" }}>Genutzt von</p>
-                <p className="font-medium text-sm mt-1" style={{ color: C.charcoal }}>
-                  Hedge Funds · Prop Traders · Institutionelle Desks
-                </p>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── COMPARISON ───────────────────────────────────── */}
-      <section className="px-6 sm:px-10 py-24 max-w-6xl mx-auto">
-        <motion.div
-          initial={prefersReduced ? false : { opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-60px" }}
-          transition={{ ease: EASE_ED, duration: 0.7 }}
-          className="mb-14"
-        >
-          <p className="text-[11px] uppercase tracking-widest mb-4" style={{ color: "#aaa", fontFamily: bodyFont }}>Der Vergleich</p>
-          <h2
-            className="leading-tight"
-            style={{ fontFamily: displayFont, fontSize: "clamp(36px, 5vw, 60px)", fontWeight: 300, color: C.charcoal }}
-          >
-            Concorde vs. Traditioneller Broker
-          </h2>
-        </motion.div>
-
-        <div className="grid sm:grid-cols-2 gap-4">
-          {/* Traditional */}
-          <motion.div
-            initial={prefersReduced ? false : { opacity: 0, x: -24 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-40px" }}
-            transition={{ ease: EASE_ED, duration: 0.7, delay: 0.05 }}
-            className="rounded-2xl overflow-hidden"
-            style={{ border: `1px solid ${C.borderMid}`, backgroundColor: "#eeebe6" }}
-          >
-            <div className="px-6 py-4" style={{ borderBottom: `1px solid ${C.borderMid}` }}>
-              <p className="text-xs uppercase tracking-widest" style={{ color: "#aaa", fontFamily: bodyFont }}>Traditioneller Broker</p>
-            </div>
-            <div>
-              {COMPARISON.map((row) => (
-                <div key={row.feature} className="px-6 py-4 space-y-1" style={{ borderBottom: `1px solid #e0dcd6` }}>
-                  <p className="text-[10px] uppercase tracking-wider" style={{ color: "#bbb", fontFamily: bodyFont }}>{row.feature}</p>
-                  <p className="text-sm line-through" style={{ color: "#aaa", fontFamily: bodyFont }}>{row.traditional}</p>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* Concorde */}
-          <motion.div
-            initial={prefersReduced ? false : { opacity: 0, x: 24 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-40px" }}
-            transition={{ ease: EASE_ED, duration: 0.7, delay: 0.12 }}
-            className="rounded-2xl overflow-hidden"
-            style={{ border: `2px solid ${C.burnt}`, backgroundColor: C.cream }}
-          >
-            <div className="px-6 py-4" style={{ borderBottom: `1px solid #e8ddd5` }}>
-              <p className="text-xs uppercase tracking-widest font-semibold" style={{ color: C.burnt, fontFamily: bodyFont }}>Concorde</p>
-            </div>
-            <div>
-              {COMPARISON.map((row, i) => (
-                <motion.div
-                  key={row.feature}
-                  initial={prefersReduced ? false : { opacity: 0, x: 12 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ ease: EASE, duration: 0.4, delay: 0.2 + i * 0.06 }}
-                  className="px-6 py-4 space-y-1 group cursor-default"
-                  style={{ borderBottom: `1px solid #e8ddd5` }}
-                >
-                  <p className="text-[10px] uppercase tracking-wider" style={{ color: "#bbb", fontFamily: bodyFont }}>{row.feature}</p>
-                  <p
-                    className="font-semibold text-sm transition-colors duration-200"
-                    style={{ color: C.charcoal, fontFamily: bodyFont }}
-                    onMouseEnter={(e) => (e.currentTarget.style.color = C.burnt)}
-                    onMouseLeave={(e) => (e.currentTarget.style.color = C.charcoal)}
-                  >
-                    {row.concorde}
-                  </p>
-                </motion.div>
-              ))}
+            <FunnelEmailForm variant="dark" ctaText="Early Access anfragen" placeholder="Deine E-Mail-Adresse" />
+            <div className="mt-4 flex items-center gap-4">
+              <FunnelCountdown theme="navy" />
+              <span className="text-[11px]" style={{ color: "#2E3A56" }}>·</span>
+              <span className="text-[11px]" style={{ color: T.heroMuted }}>
+                Kostenlos. Keine Kreditkarte.
+              </span>
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* ─── MARKETS ──────────────────────────────────────── */}
-      <section className="px-6 sm:px-10 py-20 border-t" style={{ borderColor: C.border }}>
-        <div className="max-w-6xl mx-auto">
-          <motion.div
-            initial={prefersReduced ? false : { opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-60px" }}
-            transition={{ ease: EASE_ED, duration: 0.7 }}
-            className="mb-12"
-          >
-            <h2 className="leading-tight" style={{ fontFamily: displayFont, fontSize: "clamp(32px, 4.5vw, 52px)", fontWeight: 300, color: C.charcoal }}>
-              Alle Märkte.{" "}
-              <span style={{ fontStyle: "italic", color: C.burnt }}>Eine Plattform.</span>
-            </h2>
-          </motion.div>
-          <div style={{ borderTop: `1px solid ${C.border}` }}>
-            {MARKETS.map((market, i) => (
+      {/* ═══════════════════════════════════════════════════
+          STATS BAR (big numbers, tabular)
+      ════════════════════════════════════════════════════ */}
+      <section
+        className="px-6 sm:px-10 py-16"
+        style={{ backgroundColor: T.bg, borderBottom: `1px solid ${T.border}` }}
+      >
+        <div className="max-w-5xl mx-auto">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-y-10 gap-x-8">
+            {[
+              { to: 24, suffix: "/7", label: "Handel rund um die Uhr" },
+              { to: 100, suffix: "×", label: "Maximaler Hebel" },
+              { to: 0, suffix: " Tage", label: "Settlement-Verzögerung" },
+              { special: "0 €", label: "Mindesteinlage" },
+            ].map((stat, i) => (
               <motion.div
-                key={market.name}
-                initial={prefersReduced ? false : { opacity: 0, y: 16 }}
+                key={i}
+                initial={prefersReduced ? false : { opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-20px" }}
-                transition={{ ease: EASE, duration: 0.45, delay: i * 0.08 }}
-                className="group grid grid-cols-3 sm:grid-cols-4 items-center py-5 cursor-default"
-                style={{ borderBottom: `1px solid ${C.border}` }}
+                viewport={{ once: true, margin: "-40px" }}
+                transition={{ ease: EASE_SNAP, duration: 0.55, delay: i * 0.08 }}
+                className="space-y-2"
               >
                 <p
-                  className="font-semibold text-sm col-span-1 transition-colors duration-200"
-                  style={{ fontFamily: bodyFont, color: C.charcoal }}
-                  onMouseEnter={(e) => (e.currentTarget.style.color = C.burnt)}
-                  onMouseLeave={(e) => (e.currentTarget.style.color = C.charcoal)}
+                  className="leading-none tabular-nums"
+                  style={{
+                    fontFamily: T.sans,
+                    fontWeight: 700,
+                    fontSize: "clamp(36px, 6vw, 56px)",
+                    letterSpacing: "-0.02em",
+                    color: T.text,
+                    fontFeatureSettings: '"tnum"',
+                  }}
                 >
-                  {market.name}
+                  {"special" in stat ? (
+                    stat.special
+                  ) : (
+                    <CountUp to={stat.to!} suffix={stat.suffix} duration={1.0} />
+                  )}
                 </p>
-                <p className="text-xs col-span-1 tabular-nums" style={{ color: "#aaa", fontFamily: "var(--font-mono, 'SF Mono', monospace)" }}>{market.examples}</p>
-                <p className="text-xs hidden sm:block col-span-2" style={{ color: "#bbb", fontFamily: bodyFont }}>{market.desc}</p>
+                <p className="text-xs" style={{ color: T.textMuted }}>{stat.label}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ─── TRUST ────────────────────────────────────────── */}
-      <section className="px-6 sm:px-10 py-24 border-t" style={{ borderColor: C.border, backgroundColor: C.creamDark }}>
-        <div className="max-w-6xl mx-auto">
-          <motion.p
-            initial={prefersReduced ? false : { opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ ease: EASE, duration: 0.6 }}
-            className="text-[11px] uppercase tracking-widest mb-14"
-            style={{ color: "#aaa", fontFamily: bodyFont }}
+      {/* ═══════════════════════════════════════════════════
+          WHAT ARE PERPS (editorial two-column)
+      ════════════════════════════════════════════════════ */}
+      <section
+        className="px-6 sm:px-10 py-20"
+        style={{ backgroundColor: T.bgAlt, borderBottom: `1px solid ${T.border}` }}
+      >
+        <div className="max-w-5xl mx-auto">
+          <div className="grid sm:grid-cols-2 gap-12 items-start">
+            <motion.div
+              initial={prefersReduced ? false : { opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ ease: EASE_SNAP, duration: 0.6 }}
+            >
+              <p className="text-[10px] tracking-[0.2em] uppercase mb-6" style={{ color: T.textDim }}>
+                Was sind Perpetuals?
+              </p>
+              <h2
+                className="leading-tight mb-6"
+                style={{
+                  fontFamily: T.sans,
+                  fontWeight: 600,
+                  fontSize: "clamp(26px, 4vw, 40px)",
+                  letterSpacing: "-0.02em",
+                  color: T.text,
+                }}
+              >
+                Handle auf Kursbewegungen.
+                <br />Ohne das Asset zu besitzen.
+                <br />Rund um die Uhr.
+              </h2>
+            </motion.div>
+            <motion.div
+              initial={prefersReduced ? false : { opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ ease: EASE_SNAP, duration: 0.6, delay: 0.12 }}
+              className="space-y-4 pt-2 sm:pt-8"
+            >
+              <p className="text-sm leading-relaxed" style={{ color: T.textMuted }}>
+                Perpetual Contracts sind Derivate ohne Ablaufdatum. Du spekulierst auf den Preis
+                eines Assets — Long oder Short — mit einstellbarem Hebel. Kein Besitz, kein
+                Settlement-Datum, volle Kontrolle.
+              </p>
+              <p className="text-sm leading-relaxed" style={{ color: T.textMuted }}>
+                Im Gegensatz zu traditionellen Futures musst du keine Positionen vor Quartalsende
+                schließen. Du tradest wann du willst, so lange du willst.
+              </p>
+              <div
+                className="mt-6 rounded-xl p-4"
+                style={{ background: T.indigoDim, border: `1px solid ${T.indigoMid}` }}
+              >
+                <p className="text-xs font-medium" style={{ color: T.indigo }}>
+                  €10 Einsatz bei 50× Hebel = €500 Position.
+                  Bei +2 % Kurs: +€10 Gewinn = 100 % Rendite.
+                </p>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════
+          COMPARISON TABLE
+      ════════════════════════════════════════════════════ */}
+      <section className="px-6 sm:px-10 py-20" style={{ backgroundColor: T.bg }}>
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial={prefersReduced ? false : { opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ ease: EASE_SNAP, duration: 0.55 }}
+            className="mb-10"
           >
-            Sicherheit & Regulierung
-          </motion.p>
-          <div className="grid sm:grid-cols-3 gap-10">
+            <p className="text-[10px] tracking-[0.2em] uppercase mb-4" style={{ color: T.textDim }}>
+              Der Vergleich
+            </p>
+            <h2
+              style={{
+                fontFamily: T.sans,
+                fontWeight: 600,
+                fontSize: "clamp(22px, 3.5vw, 36px)",
+                letterSpacing: "-0.02em",
+                color: T.text,
+              }}
+            >
+              Concorde vs. traditionelles Trading
+            </h2>
+          </motion.div>
+
+          <motion.div
+            initial={prefersReduced ? false : { opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-40px" }}
+            transition={{ ease: EASE_SNAP, duration: 0.6, delay: 0.1 }}
+            className="rounded-2xl overflow-hidden"
+            style={{ border: `1px solid ${T.border}` }}
+          >
+            {/* Table header */}
+            <div
+              className="grid grid-cols-3 px-5 py-3"
+              style={{ backgroundColor: T.bgAlt, borderBottom: `1px solid ${T.border}` }}
+            >
+              <p className="text-[10px] uppercase tracking-[0.15em]" style={{ color: T.textDim }}>Feature</p>
+              <p className="text-[10px] uppercase tracking-[0.15em] font-semibold" style={{ color: T.indigo }}>
+                Concorde
+              </p>
+              <p className="text-[10px] uppercase tracking-[0.15em]" style={{ color: T.textDim }}>Traditionell</p>
+            </div>
+            {/* Rows */}
+            {COMPARISON.map((row, i) => (
+              <div
+                key={row.feature}
+                className="grid grid-cols-3 px-5 py-4 items-center"
+                style={{
+                  borderBottom: i < COMPARISON.length - 1 ? `1px solid ${T.border}` : "none",
+                  backgroundColor: i % 2 === 0 ? T.bg : T.bgAlt,
+                }}
+              >
+                <p className="text-xs" style={{ color: T.textMuted }}>{row.feature}</p>
+                <p
+                  className="text-xs font-semibold"
+                  style={{ color: T.text, fontFeatureSettings: '"tnum"' }}
+                >
+                  {row.concorde}
+                </p>
+                <p
+                  className="text-xs"
+                  style={{ color: T.textDim, fontFeatureSettings: '"tnum"' }}
+                >
+                  {row.traditional}
+                </p>
+              </div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════
+          FIVE FEATURES (public.com "Five nerdy features")
+      ════════════════════════════════════════════════════ */}
+      <section
+        className="px-6 sm:px-10 py-20"
+        style={{ backgroundColor: T.bgAlt, borderTop: `1px solid ${T.border}`, borderBottom: `1px solid ${T.border}` }}
+      >
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial={prefersReduced ? false : { opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ ease: EASE_SNAP, duration: 0.5 }}
+            className="mb-10"
+          >
+            <p className="text-[10px] tracking-[0.2em] uppercase mb-4" style={{ color: T.textDim }}>
+              Features
+            </p>
+            <h2
+              style={{
+                fontFamily: T.sans,
+                fontWeight: 600,
+                fontSize: "clamp(22px, 3.5vw, 36px)",
+                letterSpacing: "-0.02em",
+                color: T.text,
+              }}
+            >
+              Fünf Dinge, die du lieben wirst.
+            </h2>
+          </motion.div>
+
+          <div className="space-y-0 rounded-2xl overflow-hidden" style={{ border: `1px solid ${T.border}` }}>
+            {FEATURES.map((feat, i) => (
+              <motion.div
+                key={feat.n}
+                initial={prefersReduced ? false : { opacity: 0, x: -12 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, margin: "-20px" }}
+                transition={{ ease: EASE_SNAP, duration: 0.45, delay: i * 0.07 }}
+                className="flex items-start gap-6 px-6 py-5"
+                style={{
+                  borderBottom: i < FEATURES.length - 1 ? `1px solid ${T.border}` : "none",
+                  backgroundColor: T.bg,
+                }}
+              >
+                <span
+                  className="text-xs font-semibold tabular-nums shrink-0 mt-0.5"
+                  style={{ color: T.indigo, fontFeatureSettings: '"tnum"' }}
+                >
+                  {feat.n}
+                </span>
+                <div>
+                  <p className="text-sm font-semibold mb-1" style={{ color: T.text }}>{feat.title}</p>
+                  <p className="text-sm leading-relaxed" style={{ color: T.textMuted }}>{feat.desc}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════
+          MARKETS LIST
+      ════════════════════════════════════════════════════ */}
+      <section className="px-6 sm:px-10 py-20" style={{ backgroundColor: T.bg }}>
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial={prefersReduced ? false : { opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ ease: EASE_SNAP, duration: 0.5 }}
+            className="mb-8"
+          >
+            <p className="text-[10px] tracking-[0.2em] uppercase mb-4" style={{ color: T.textDim }}>
+              Verfügbare Märkte
+            </p>
+            <h2
+              style={{
+                fontFamily: T.sans,
+                fontWeight: 600,
+                fontSize: "clamp(22px, 3.5vw, 36px)",
+                letterSpacing: "-0.02em",
+                color: T.text,
+              }}
+            >
+              Alle Märkte. Eine Plattform.
+            </h2>
+          </motion.div>
+
+          <div className="space-y-0 rounded-2xl overflow-hidden" style={{ border: `1px solid ${T.border}` }}>
+            {MARKETS.map((m, i) => (
+              <motion.div
+                key={m.name}
+                initial={prefersReduced ? false : { opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-20px" }}
+                transition={{ ease: EASE_SNAP, duration: 0.4, delay: i * 0.06 }}
+                className="flex items-center justify-between px-6 py-4"
+                style={{
+                  borderBottom: i < MARKETS.length - 1 ? `1px solid ${T.border}` : "none",
+                  backgroundColor: i % 2 === 0 ? T.bg : T.bgAlt,
+                }}
+              >
+                <div className="flex items-center gap-6">
+                  <p className="text-sm font-semibold w-20" style={{ color: T.text }}>{m.name}</p>
+                  <p
+                    className="text-xs font-medium hidden sm:block"
+                    style={{ color: T.textMuted, fontFeatureSettings: '"tnum"' }}
+                  >
+                    {m.examples}
+                  </p>
+                </div>
+                <p className="text-xs text-right" style={{ color: T.textDim }}>{m.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════
+          TRUST / SECURITY
+      ════════════════════════════════════════════════════ */}
+      <section
+        className="px-6 sm:px-10 py-20"
+        style={{ backgroundColor: T.bgAlt, borderTop: `1px solid ${T.border}`, borderBottom: `1px solid ${T.border}` }}
+      >
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial={prefersReduced ? false : { opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ ease: EASE_SNAP, duration: 0.5 }}
+            className="mb-10"
+          >
+            <p className="text-[10px] tracking-[0.2em] uppercase mb-4" style={{ color: T.textDim }}>
+              Sicherheit & Regulierung
+            </p>
+            <h2
+              style={{
+                fontFamily: T.sans,
+                fontWeight: 600,
+                fontSize: "clamp(22px, 3.5vw, 36px)",
+                letterSpacing: "-0.02em",
+                color: T.text,
+              }}
+            >
+              Sicher durch Design.
+              <br />
+              <span style={{ color: T.textMuted, fontWeight: 400 }}>Transparent durch Wahl.</span>
+            </h2>
+          </motion.div>
+
+          <div className="grid sm:grid-cols-3 gap-6">
             {TRUST.map((item, i) => (
               <motion.div
                 key={item.title}
                 initial={prefersReduced ? false : { opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-40px" }}
-                transition={{ ease: EASE_ED, duration: 0.7, delay: i * 0.12 }}
-                className="space-y-4 group"
+                transition={{ ease: EASE_SNAP, duration: 0.5, delay: i * 0.1 }}
+                className="rounded-2xl p-6 space-y-4"
+                style={{ backgroundColor: T.bg, border: `1px solid ${T.border}` }}
               >
-                <p
-                  className="leading-none"
-                  style={{ fontFamily: displayFont, fontSize: "clamp(36px, 5vw, 52px)", fontWeight: 300, color: C.burnt, lineHeight: 1 }}
-                >
-                  {item.label}
-                </p>
                 <div
-                  className="h-px w-8 transition-all duration-300 group-hover:w-16"
-                  style={{ backgroundColor: C.burnt }}
-                />
-                <h3 className="font-semibold text-sm" style={{ color: C.charcoal, fontFamily: bodyFont }}>{item.title}</h3>
-                <p className="text-sm leading-relaxed" style={{ color: "#888", fontFamily: bodyFont }}>{item.desc}</p>
+                  className="w-9 h-9 rounded-xl flex items-center justify-center"
+                  style={{ backgroundColor: T.indigoDim, color: T.indigo }}
+                >
+                  {item.icon}
+                </div>
+                <div>
+                  <p
+                    className="text-[10px] tracking-[0.18em] uppercase mb-2 font-semibold"
+                    style={{ color: T.indigo }}
+                  >
+                    {item.label}
+                  </p>
+                  <h3 className="text-sm font-semibold mb-2" style={{ color: T.text }}>
+                    {item.title}
+                  </h3>
+                  <p className="text-xs leading-relaxed" style={{ color: T.textMuted }}>
+                    {item.desc}
+                  </p>
+                </div>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ─── FINAL CTA ────────────────────────────────────── */}
-      <section className="px-6 sm:px-10 py-28" style={{ backgroundColor: C.dark }}>
-        <div className="max-w-4xl mx-auto space-y-10">
+      {/* ═══════════════════════════════════════════════════
+          FINAL CTA (dark navy)
+      ════════════════════════════════════════════════════ */}
+      <section style={{ backgroundColor: T.heroBg }}>
+        <div className="px-6 sm:px-10 py-24 sm:py-32 max-w-5xl mx-auto">
           <motion.div
-            initial={prefersReduced ? false : { opacity: 0, y: 30 }}
+            initial={prefersReduced ? false : { opacity: 0, y: 28 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
-            transition={{ ease: EASE_ED, duration: 0.8 }}
+            transition={{ ease: EASE_SNAP, duration: 0.65 }}
+            className="max-w-2xl"
           >
             <h2
-              className="leading-tight mb-10"
-              style={{ fontFamily: displayFont, fontSize: "clamp(40px, 7vw, 80px)", fontWeight: 300, color: "#f5f3ef", letterSpacing: "-0.01em" }}
+              className="mb-6"
+              style={{
+                fontFamily: T.sans,
+                fontWeight: 300,
+                fontSize: "clamp(36px, 6vw, 68px)",
+                letterSpacing: "-0.025em",
+                lineHeight: 1.1,
+                color: T.heroText,
+              }}
             >
-              Bereit für die nächste
-              <br />
-              <span style={{ fontStyle: "italic", color: C.burnt }}>Generation des Tradings?</span>
+              Bereit für die nächste{" "}
+              <span style={{ fontWeight: 600, color: T.indigoBright }}>
+                Generation des Tradings?
+              </span>
             </h2>
+            <p className="text-base mb-10" style={{ color: T.heroMuted }}>
+              €20 Startguthaben. Kostenlos. Kein Risiko.
+            </p>
             <div className="max-w-md">
-              <FunnelEmailForm variant="light" ctaText="Early Access anfragen" placeholder="Deine E-Mail-Adresse" />
-              <p className="text-[11px] mt-3" style={{ color: "#555", fontFamily: bodyFont }}>
+              <FunnelEmailForm variant="dark" ctaText="Early Access anfragen" placeholder="Deine E-Mail-Adresse" />
+              <p className="text-[11px] mt-3" style={{ color: "#2E3A56" }}>
                 Kostenlos. Keine Kreditkarte. Keine Verpflichtung.
               </p>
             </div>
           </motion.div>
         </div>
-      </section>
 
-      {/* ─── FOOTER ───────────────────────────────────────── */}
-      <footer className="px-6 sm:px-10 py-12 border-t" style={{ borderColor: "#2a2a2a", backgroundColor: C.dark }}>
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-center gap-2 mb-7">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M2 18L10 6L14 12L22 4" stroke="#444" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
-              <circle cx="22" cy="4" r="1.5" fill="#444" />
+        {/* Footer */}
+        <footer
+          className="px-6 sm:px-10 py-10 max-w-5xl mx-auto"
+          style={{ borderTop: `1px solid ${T.borderHero}` }}
+        >
+          <div className="flex items-center gap-2 mb-5">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M2 18L10 6L14 12L22 4" stroke="#2E3A56" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+              <circle cx="22" cy="4" r="1.5" fill="#2E3A56" />
             </svg>
-            <span className="text-xs tracking-tight font-semibold" style={{ color: "#444", fontFamily: bodyFont }}>Concorde</span>
+            <span className="text-xs font-semibold" style={{ color: "#2E3A56" }}>Concorde</span>
           </div>
-          <p className="text-[10px] leading-relaxed max-w-2xl" style={{ color: "#444", fontFamily: bodyFont }}>
+          <p className="text-[10px] leading-relaxed max-w-2xl" style={{ color: "#2E3A56" }}>
             Risikohinweis: Der Handel mit Derivaten und Hebelprodukten ist spekulativ und birgt ein hohes
             Verlustrisiko. Du kannst mehr als deine ursprüngliche Einlage verlieren. Diese Produkte sind
             nicht für alle Anleger geeignet. Vergangene Wertentwicklungen sind kein verlässlicher
             Indikator für zukünftige Ergebnisse. Concorde — Perpetual Contracts.
           </p>
-        </div>
-      </footer>
+        </footer>
+      </section>
     </div>
   );
 }
