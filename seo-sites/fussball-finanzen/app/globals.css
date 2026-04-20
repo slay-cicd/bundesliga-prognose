@@ -1,0 +1,275 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&family=Inter:wght@400;500;600&display=swap');
+@import "tailwindcss";
+
+/* ============================================================
+   CUSTOM THEME TOKENS
+   ============================================================ */
+@theme {
+  /* Warm light palette */
+  --color-warm-white: #FAFAF7;
+  --color-warm-paper: #F5F5F0;
+  --color-warm-border: #E5E5E0;
+
+  --color-text-heading: #1A1A1A;
+  --color-text-body: #4A4A4A;
+  --color-text-muted: #6B7280;
+  --color-text-faint: #9CA3AF;
+
+  --color-accent: #16a34a;
+  --color-accent-light: #dcfce7;
+  --color-accent-hover: #15803d;
+
+  --color-card-bg: #FFFFFF;
+  --color-footer-bg: #F3F3EE;
+
+  --font-serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* ============================================================
+   GLOBAL RESETS & BASE
+   ============================================================ */
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background-color: #FAFAF7;
+  min-height: 100vh;
+  color: #4A4A4A;
+  font-family: var(--font-sans);
+  font-size: 18px;
+  line-height: 1.8;
+}
+
+/* ============================================================
+   UTILITY CLASSES
+   ============================================================ */
+
+/* Serif headings */
+.font-serif {
+  font-family: var(--font-serif);
+}
+
+/* Reveal animation */
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Staggered children */
+.reveal-stagger > *:nth-child(1) { transition-delay: 0ms; }
+.reveal-stagger > *:nth-child(2) { transition-delay: 60ms; }
+.reveal-stagger > *:nth-child(3) { transition-delay: 120ms; }
+.reveal-stagger > *:nth-child(4) { transition-delay: 180ms; }
+.reveal-stagger > *:nth-child(5) { transition-delay: 240ms; }
+.reveal-stagger > *:nth-child(6) { transition-delay: 300ms; }
+.reveal-stagger > *:nth-child(7) { transition-delay: 360ms; }
+.reveal-stagger > *:nth-child(8) { transition-delay: 420ms; }
+.reveal-stagger > *:nth-child(9) { transition-delay: 480ms; }
+
+/* CTA button */
+.btn-primary {
+  background: #16a34a;
+  color: #ffffff;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 0.875rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+  letter-spacing: -0.01em;
+  display: inline-block;
+  text-decoration: none;
+}
+
+.btn-primary:hover {
+  background: #15803d;
+}
+
+.btn-outline {
+  border: 1px solid #E5E5E0;
+  color: #4A4A4A;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 0.875rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: 6px;
+  transition: border-color 0.2s ease, color 0.2s ease;
+  display: inline-block;
+  text-decoration: none;
+}
+
+.btn-outline:hover {
+  border-color: #16a34a;
+  color: #16a34a;
+}
+
+/* Article prose styles */
+.article-prose {
+  color: #4A4A4A;
+  line-height: 1.8;
+  font-size: 1.0625rem;
+}
+
+.article-prose h2 {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1A1A1A;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+}
+
+.article-prose h3 {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1A1A1A;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+.article-prose h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1A1A1A;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.article-prose p {
+  margin-bottom: 1.5rem;
+}
+
+.article-prose a {
+  color: #16a34a;
+  text-decoration: underline;
+  text-decoration-color: rgba(22, 163, 74, 0.4);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.2s;
+}
+
+.article-prose a:hover {
+  text-decoration-color: #16a34a;
+}
+
+.article-prose strong {
+  color: #1A1A1A;
+  font-weight: 600;
+}
+
+.article-prose em {
+  font-style: italic;
+}
+
+.article-prose ul,
+.article-prose ol {
+  padding-left: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.article-prose li {
+  margin-bottom: 0.5rem;
+}
+
+.article-prose ul li {
+  list-style-type: disc;
+}
+
+.article-prose ol li {
+  list-style-type: decimal;
+}
+
+.article-prose blockquote {
+  border-left: 3px solid #16a34a;
+  padding: 0.25rem 0 0.25rem 1.5rem;
+  margin: 2rem 0;
+  color: #6B7280;
+  font-style: italic;
+  font-family: var(--font-serif);
+  font-size: 1.125rem;
+}
+
+.article-prose code {
+  background: #F3F3EE;
+  color: #1A1A1A;
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.875em;
+  font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, monospace;
+}
+
+.article-prose pre {
+  background: #F3F3EE;
+  padding: 1.25rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin-bottom: 1.5rem;
+}
+
+.article-prose pre code {
+  background: transparent;
+  padding: 0;
+}
+
+.article-prose hr {
+  border: none;
+  border-top: 1px solid #E5E5E0;
+  margin: 2.5rem 0;
+}
+
+.article-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.5rem;
+  font-size: 0.9375rem;
+}
+
+.article-prose th {
+  text-align: left;
+  padding: 0.625rem 1rem;
+  border-bottom: 2px solid #E5E5E0;
+  font-weight: 600;
+  color: #1A1A1A;
+}
+
+.article-prose td {
+  padding: 0.625rem 1rem;
+  border-bottom: 1px solid #E5E5E0;
+}
+
+/* Divider */
+.divider {
+  height: 1px;
+  background-color: #E5E5E0;
+}
+
+/* Tag pill */
+.tag-pill {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #16a34a;
+  background-color: #dcfce7;
+  padding: 0.2rem 0.625rem;
+  border-radius: 100px;
+  display: inline-block;
+}

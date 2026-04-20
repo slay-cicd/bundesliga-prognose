@@ -23,7 +23,7 @@ export function SignupCTA() {
               Bereit zu traden?
             </p>
             <p className="text-xs text-text-muted mt-0.5">
-              Sichere dir Early Access — kostenlos.
+              Account erstellen in unter 60 Sekunden.
             </p>
           </div>
           <button
@@ -38,7 +38,9 @@ export function SignupCTA() {
         </div>
         <Link
           href="/registrierung"
-          className="mt-3 block w-full text-center py-2.5 bg-accent hover:bg-accent-hover text-white text-sm font-semibold rounded-lg transition-colors"
+          data-event="register_click"
+          className="mt-3 block w-full text-center py-2.5 text-white text-sm font-semibold rounded-lg transition-colors"
+          style={{ backgroundColor: "#C4622D" }}
         >
           Jetzt registrieren
         </Link>

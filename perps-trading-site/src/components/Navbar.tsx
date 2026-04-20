@@ -36,9 +36,11 @@ export function Navbar() {
             </Link>
             <Link
               href="/registrierung"
-              className="text-sm font-medium bg-accent hover:bg-accent-hover text-white px-4 py-1.5 rounded-lg transition-colors"
+              data-event="register_click"
+              className="text-sm font-medium text-white px-4 py-1.5 rounded-lg transition-colors"
+              style={{ backgroundColor: "#C4622D" }}
             >
-              Registrieren
+              Jetzt registrieren
             </Link>
           </div>
 
@@ -75,10 +77,12 @@ export function Navbar() {
               </Link>
               <Link
                 href="/registrierung"
+                data-event="register_click"
                 onClick={() => setMobileOpen(false)}
-                className="text-sm font-medium bg-accent text-white px-4 py-2.5 rounded-lg text-center"
+                className="text-sm font-medium text-white px-4 py-2.5 rounded-lg text-center"
+                style={{ backgroundColor: "#C4622D" }}
               >
-                Registrieren
+                Jetzt registrieren
               </Link>
             </div>
           </motion.div>

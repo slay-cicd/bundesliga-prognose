@@ -133,15 +133,18 @@ export function TradingPanel({ upOdds, downOdds, onTrade }: TradingPanelProps) {
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-accent/10 border border-accent/30 rounded-lg p-4 text-center"
+          className="rounded-xl p-4 text-center"
+          style={{ background: "rgba(196,98,45,0.08)", border: "1px solid rgba(196,98,45,0.25)" }}
         >
-          <p className="text-sm font-semibold text-accent mb-1">Demo-Modus</p>
+          <p className="text-sm font-semibold text-text-primary mb-1">Bereit für echtes Trading?</p>
           <p className="text-xs text-text-secondary mb-3">
-            Registriere dich für echtes Trading.
+            Erstelle jetzt deinen Account und starte in unter 60 Sekunden.
           </p>
           <a
             href="/registrierung"
-            className="inline-block w-full py-2.5 bg-accent hover:bg-accent-hover text-white text-sm font-semibold rounded-lg transition-colors"
+            data-event="register_click"
+            className="inline-block w-full py-2.5 text-white text-sm font-semibold rounded-lg transition-colors"
+            style={{ backgroundColor: "#C4622D" }}
           >
             Jetzt registrieren
           </a>

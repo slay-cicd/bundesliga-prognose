@@ -10,6 +10,7 @@ import { RelatedMarkets } from "@/components/RelatedMarkets";
 import { SignupCTA } from "@/components/SignupCTA";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { MarketLogo } from "@/components/MarketLogo";
 
 function getVolatility(price: number): number {
   if (price > 10000) return price * 0.002;
@@ -49,11 +50,8 @@ export default function MarketPage({ params }: { params: Promise<{ id: string }>
             <div className="bg-surface-1 rounded-xl border border-border p-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div
-                    className="w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold text-white"
-                    style={{ backgroundColor: market.color }}
-                  >
-                    {market.abbr.slice(0, 4)}
+                  <div className="flex-shrink-0">
+                    <MarketLogo market={market} size={40} />
                   </div>
                   <div>
                     <h1 className="text-xl font-bold text-text-primary">{market.name}</h1>
@@ -178,14 +176,24 @@ export default function MarketPage({ params }: { params: Promise<{ id: string }>
             <RelatedMarkets markets={related} />
 
             {/* Inline signup */}
-            <div className="bg-surface-1 rounded-xl border border-accent/20 p-5 text-center">
-              <p className="text-sm font-semibold text-text-primary mb-1">Demo-Modus</p>
-              <p className="text-xs text-text-muted mb-3">
-                Registriere dich für echtes Trading mit echtem Geld.
+            <div
+              className="rounded-xl p-5 text-center"
+              style={{ background: "rgba(196,98,45,0.07)", border: "1px solid rgba(196,98,45,0.2)" }}
+            >
+              <p
+                className="text-sm font-semibold text-text-primary mb-1"
+                style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", fontSize: "1.1rem", fontStyle: "italic" }}
+              >
+                Jetzt echte Position eröffnen
+              </p>
+              <p className="text-xs text-text-muted mb-4">
+                Account erstellen in unter 60 Sekunden.
               </p>
               <Link
                 href="/registrierung"
-                className="block w-full py-2.5 bg-accent hover:bg-accent-hover text-white text-sm font-semibold rounded-lg transition-colors"
+                data-event="register_click"
+                className="block w-full py-2.5 text-white text-sm font-semibold rounded-lg transition-colors"
+                style={{ backgroundColor: "#C4622D" }}
               >
                 Jetzt registrieren
               </Link>
