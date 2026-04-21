@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import Link from "next/link";
+import { mpTrack, mpIdentify, mpSetProfile } from "@/lib/mixpanel";
 
 const SERIF = "var(--font-cormorant, Georgia, serif)";
 const BURNT = "#C4622D";
@@ -13,12 +14,52 @@ export default function Registrierung() {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
   const prefersReduced = useReducedMotion();
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (step === 1) setStep(2);
-    else setSubmitted(true);
+    if (step === 1) {
+      mpTrack("Registrierung Step 1 Completed", { email_provided: !!email });
+      setStep(2);
+      return;
+    }
+    if (loading) return;
+    setLoading(true);
+    // Identify user so downstream events attach to this profile.
+    if (email) {
+      mpIdentify(email);
+      mpSetProfile({ $email: email, $name: name || undefined, signup_source: "registrierung" });
+    }
+    mpTrack("Lead", {
+      funnel_variant: "registrierung",
+      content_name: "direct_registrierung",
+      content_category: "email_capture",
+      email,
+      name,
+    });
+    // Persist lead (name + email) and fire pixel Lead event.
+    try {
+      await fetch("/api/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, name, market: "registrierung" }),
+      });
+      if (typeof window !== "undefined" && typeof window.fbq === "function") {
+        window.fbq("track", "Lead", {
+          content_name: "direct_registrierung",
+          content_category: "email_capture",
+        });
+      }
+    } catch (err) {
+      console.error("registrierung subscribe failed", err);
+    }
+    setSubmitted(true);
+    setLoading(false);
+    // Nudge them into the questionnaire so we capture the bonus-question data.
+    setTimeout(() => {
+      window.location.href = `/questionnaire?email=${encodeURIComponent(email)}&source=registrierung`;
+    }, 1400);
   }
 
   return (
@@ -367,17 +408,26 @@ export default function Registrierung() {
 
                   <motion.button
                     type="submit"
-                    whileHover={prefersReduced ? undefined : { scale: 1.01 }}
-                    whileTap={{ scale: 0.99 }}
-                    className="w-full mt-7 text-white font-bold text-sm py-3.5 rounded-xl transition-all"
+                    disabled={loading}
+                    whileHover={prefersReduced ? undefined : { scale: loading ? 1 : 1.01 }}
+                    whileTap={{ scale: loading ? 1 : 0.99 }}
+                    className="w-full mt-7 text-white font-bold text-sm py-3.5 rounded-xl transition-all disabled:opacity-70 disabled:cursor-not-allowed"
                     style={{
                       background: BURNT,
                       boxShadow: `0 0 0 1px ${BURNT}, 0 8px 24px -6px ${BURNT}88`,
                     }}
-                    onMouseEnter={(e) => (e.currentTarget.style.background = "#b0561f")}
-                    onMouseLeave={(e) => (e.currentTarget.style.background = BURNT)}
+                    onMouseEnter={(e) => {
+                      if (!loading) e.currentTarget.style.background = "#b0561f";
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!loading) e.currentTarget.style.background = BURNT;
+                    }}
                   >
-                    {step === 1 ? "Weiter →" : "Account erstellen & Bonus sichern"}
+                    {loading
+                      ? "Wird gesendet…"
+                      : step === 1
+                      ? "Weiter →"
+                      : "Account erstellen & Bonus sichern"}
                   </motion.button>
 
                   {step === 2 && (

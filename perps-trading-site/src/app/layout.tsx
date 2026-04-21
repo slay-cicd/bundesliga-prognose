@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
 import { Inter, Cormorant_Garamond } from "next/font/google";
+import { Suspense } from "react";
+import { MetaPixel } from "@/components/MetaPixel";
+import { MixpanelProvider } from "@/components/MixpanelProvider";
+import { EventDelegate } from "@/components/EventDelegate";
 import "./globals.css";
 
 const inter = Inter({
@@ -43,6 +47,13 @@ export default function RootLayout({
   return (
     <html lang="de" className={`${inter.variable} ${cormorant.variable} h-full antialiased`}>
       <body className="min-h-full bg-surface-0 text-text-primary">
+        <Suspense fallback={null}>
+          <MetaPixel />
+        </Suspense>
+        <Suspense fallback={null}>
+          <MixpanelProvider />
+        </Suspense>
+        <EventDelegate />
         {children}
       </body>
     </html>

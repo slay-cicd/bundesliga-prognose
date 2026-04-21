@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { SectionReveal } from "@/components/SectionReveal";
+import { mpTrack, mpSetFunnelVariant } from "@/lib/mixpanel";
 
 const SERIF = "var(--font-cormorant, Georgia, serif)";
 const BURNT = "#C4622D";
@@ -28,12 +29,42 @@ function WordGate({ children, delay = 0 }: { children: React.ReactNode; delay?: 
 function EmailCapture({ ctaText = "Früher Zugang sichern" }: { ctaText?: string }) {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
   const prefersReduced = useReducedMotion();
   const EASE = [0.22, 1, 0.36, 1] as const;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email.includes("@")) setSubmitted(true);
+    if (!email.includes("@") || loading) return;
+    setLoading(true);
+    // Mixpanel: fire Lead event with variant tag + set identity early
+    mpTrack("Lead", {
+      funnel_variant: "funnel1",
+      content_name: "funnel_professional",
+      content_category: "email_capture",
+      email,
+    });
+    try {
+      await fetch("/api/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, market: "funnel1" }),
+      });
+      // Fire Meta Pixel Lead event (standard event for ad optimisation)
+      if (typeof window !== "undefined" && typeof window.fbq === "function") {
+        window.fbq("track", "Lead", {
+          content_name: "funnel_professional",
+          content_category: "email_capture",
+        });
+      }
+    } catch (err) {
+      console.error("subscribe failed", err);
+    }
+    setSubmitted(true);
+    // Redirect to questionnaire so user can claim faster bonus
+    setTimeout(() => {
+      window.location.href = `/questionnaire?email=${encodeURIComponent(email)}&source=funnel1`;
+    }, 900);
   };
 
   return (
@@ -70,7 +101,7 @@ function EmailCapture({ ctaText = "Früher Zugang sichern" }: { ctaText?: string
               onMouseEnter={(e) => (e.currentTarget.style.background = "#b0561f")}
               onMouseLeave={(e) => (e.currentTarget.style.background = BURNT)}
             >
-              {ctaText}
+              {loading ? "Wird gesendet…" : ctaText}
             </button>
           </div>
         </motion.form>
@@ -186,6 +217,23 @@ const TRUST = [
 
 export default function Funnel1Page() {
   const prefersReduced = useReducedMotion();
+
+  // Meta Pixel: fire ViewContent with variant tag on mount so we can compare
+  // /funnel vs /funnel1 performance in Ads Manager. Also register Mixpanel
+  // super-property funnel_variant so downstream events inherit the tag.
+  useEffect(() => {
+    mpSetFunnelVariant("funnel1");
+    mpTrack("Funnel Viewed", {
+      funnel_variant: "funnel1",
+      content_name: "funnel_professional",
+    });
+    if (typeof window === "undefined" || typeof window.fbq !== "function") return;
+    window.fbq("track", "ViewContent", {
+      content_name: "funnel_professional",
+      content_category: "landing_page",
+      content_ids: ["funnel1"],
+    });
+  }, []);
 
   return (
     <>

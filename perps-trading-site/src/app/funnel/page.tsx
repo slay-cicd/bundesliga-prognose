@@ -7,6 +7,7 @@ import { FunnelCountdown } from "@/components/FunnelCountdown";
 import { FunnelLivePayouts } from "@/components/FunnelLivePayouts";
 import { FunnelBonusWheel } from "@/components/FunnelBonusWheel";
 import { SectionReveal } from "@/components/SectionReveal";
+import { mpTrack, mpSetFunnelVariant } from "@/lib/mixpanel";
 
 const SERIF = "var(--font-cormorant, Georgia, serif)";
 const BURNT = "#C4622D";
@@ -16,12 +17,42 @@ const EASE_ED = [0.16, 1, 0.3, 1] as const;
 function EmailCapture({ ctaText = "Konto eröffnen" }: { ctaText?: string }) {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
   const prefersReduced = useReducedMotion();
   const EASE = [0.22, 1, 0.36, 1] as const;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email.includes("@")) setSubmitted(true);
+    if (!email.includes("@") || loading) return;
+    setLoading(true);
+    // Mixpanel: fire Lead event with variant tag + set identity early
+    mpTrack("Lead", {
+      funnel_variant: "funnel",
+      content_name: "funnel_aggressive",
+      content_category: "email_capture",
+      email,
+    });
+    try {
+      await fetch("/api/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, market: "funnel" }),
+      });
+      // Fire Meta Pixel Lead event (standard event for ad optimisation)
+      if (typeof window !== "undefined" && typeof window.fbq === "function") {
+        window.fbq("track", "Lead", {
+          content_name: "funnel_aggressive",
+          content_category: "email_capture",
+        });
+      }
+    } catch (err) {
+      console.error("subscribe failed", err);
+    }
+    setSubmitted(true);
+    // Redirect to questionnaire with email prefilled so user can claim faster bonus
+    setTimeout(() => {
+      window.location.href = `/questionnaire?email=${encodeURIComponent(email)}&source=funnel`;
+    }, 900);
   };
 
   return (
@@ -65,7 +96,7 @@ function EmailCapture({ ctaText = "Konto eröffnen" }: { ctaText?: string }) {
               onMouseEnter={(e) => (e.currentTarget.style.background = "#b0561f")}
               onMouseLeave={(e) => (e.currentTarget.style.background = BURNT)}
             >
-              {ctaText} →
+              {loading ? "Wird gesendet…" : `${ctaText} →`}
             </motion.button>
           </div>
         </motion.form>
@@ -191,6 +222,24 @@ const FEATURES = [
 
 export default function FunnelPage() {
   const prefersReduced = useReducedMotion();
+
+  // Meta Pixel: fire ViewContent with variant tag on mount so we can compare
+  // /funnel (aggressive) vs /funnel1 (professional) performance in Ads Manager.
+  // Also register funnel_variant as a Mixpanel super-property so every downstream
+  // event (Email Submitted, Questionnaire Completed …) is tagged automatically.
+  useEffect(() => {
+    mpSetFunnelVariant("funnel");
+    mpTrack("Funnel Viewed", {
+      funnel_variant: "funnel",
+      content_name: "funnel_aggressive",
+    });
+    if (typeof window === "undefined" || typeof window.fbq !== "function") return;
+    window.fbq("track", "ViewContent", {
+      content_name: "funnel_aggressive",
+      content_category: "landing_page",
+      content_ids: ["funnel"],
+    });
+  }, []);
 
   // Animated "live profit" ticker — now more specific and believable
   const [heroProfit, setHeroProfit] = useState(847290);
