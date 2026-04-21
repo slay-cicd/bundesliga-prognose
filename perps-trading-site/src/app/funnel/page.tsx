@@ -233,12 +233,26 @@ export default function FunnelPage() {
       funnel_variant: "funnel",
       content_name: "funnel_aggressive",
     });
-    if (typeof window === "undefined" || typeof window.fbq !== "function") return;
-    window.fbq("track", "ViewContent", {
-      content_name: "funnel_aggressive",
-      content_category: "landing_page",
-      content_ids: ["funnel"],
-    });
+    if (typeof window === "undefined") return;
+    // Poll for fbq — <Script strategy="afterInteractive"> can load after mount.
+    let tries = 0;
+    const fire = () => {
+      if (typeof window.fbq === "function") {
+        window.fbq("track", "ViewContent", {
+          content_name: "funnel_aggressive",
+          content_category: "landing_page",
+          content_ids: ["funnel"],
+        });
+        return true;
+      }
+      return false;
+    };
+    if (fire()) return;
+    const iv = setInterval(() => {
+      tries += 1;
+      if (fire() || tries > 25) clearInterval(iv);
+    }, 200);
+    return () => clearInterval(iv);
   }, []);
 
   // Animated "live profit" ticker — now more specific and believable

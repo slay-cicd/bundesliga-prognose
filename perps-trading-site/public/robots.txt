@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /questionnaire
+
+Sitemap: https://www.concordemarket.de/sitemap.xml

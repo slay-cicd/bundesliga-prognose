@@ -221,18 +221,37 @@ export default function Funnel1Page() {
   // Meta Pixel: fire ViewContent with variant tag on mount so we can compare
   // /funnel vs /funnel1 performance in Ads Manager. Also register Mixpanel
   // super-property funnel_variant so downstream events inherit the tag.
+  //
+  // NOTE: fbq is injected by <Script strategy="afterInteractive"> which may
+  // not be loaded when this useEffect first fires — especially on lighter
+  // pages where there is little other work delaying it. If we return early,
+  // ViewContent never fires and Meta has no landing-page signal to optimise
+  // on. We therefore poll for fbq up to ~5s before giving up.
   useEffect(() => {
     mpSetFunnelVariant("funnel1");
     mpTrack("Funnel Viewed", {
       funnel_variant: "funnel1",
       content_name: "funnel_professional",
     });
-    if (typeof window === "undefined" || typeof window.fbq !== "function") return;
-    window.fbq("track", "ViewContent", {
-      content_name: "funnel_professional",
-      content_category: "landing_page",
-      content_ids: ["funnel1"],
-    });
+    if (typeof window === "undefined") return;
+    let tries = 0;
+    const fire = () => {
+      if (typeof window.fbq === "function") {
+        window.fbq("track", "ViewContent", {
+          content_name: "funnel_professional",
+          content_category: "landing_page",
+          content_ids: ["funnel1"],
+        });
+        return true;
+      }
+      return false;
+    };
+    if (fire()) return;
+    const iv = setInterval(() => {
+      tries += 1;
+      if (fire() || tries > 25) clearInterval(iv);
+    }, 200);
+    return () => clearInterval(iv);
   }, []);
 
   return (

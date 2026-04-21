@@ -1,0 +1,192 @@
+{
+  "version": 1,
+  "updatedAt": "2026-04-20T20:54:46.229Z",
+  "entries": {
+    "memory:memory/2026-04-20.md:23:40": {
+      "key": "memory:memory/2026-04-20.md:23:40",
+      "path": "memory/2026-04-20.md",
+      "startLine": 23,
+      "endLine": 40,
+      "source": "memory",
+      "snippet": "1. GoDaddy DNS: switch apex A-record to Vercel's `76.76.21.21` (or ALIAS/ANAME to `cname.vercel-dns.com`), and remove GoDaddy's default forwarding/parking. 2. OR switch nameservers to Vercel entirely. 3. OR set the Vercel project's preferred domain to `www.concordemarket.de` and remove the apex alias, then have GoDaddy redirect apex → www. - Content itself is confirmed live: `curl --resolve www.concordemarket.de:443:216.198.79.131 https://www.concordemarket.de/funnel` → 200 with correct HTML (`x-matched-path: /funnel`, `x-nextjs-prerender: 1`). ## DNS fix (15:40 CET) - Fabian cleaned up GoDaddy DNS (removed stale A-records pointing to `216.150.1.1` + `216.150.16.1`). Kept only the Ve",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 0.3716729134321213,
+      "maxScore": 0.3716729134321213,
+      "firstRecalledAt": "2026-04-20T20:39:26.725Z",
+      "lastRecalledAt": "2026-04-20T20:39:26.725Z",
+      "queryHashes": [
+        "404f5b75faa0"
+      ],
+      "recallDays": [
+        "2026-04-20"
+      ],
+      "conceptTags": [
+        "a-record",
+        "76.76.21.21",
+        "alias/aname",
+        "cname.vercel-dns.com",
+        "forwarding/parking",
+        "www.concordemarket.de",
+        "216.198.79.131",
+        "www.concordemarket.de/funnel"
+      ]
+    },
+    "memory:memory/2026-04-20.md:72:89": {
+      "key": "memory:memory/2026-04-20.md:72:89",
+      "path": "memory/2026-04-20.md",
+      "startLine": 72,
+      "endLine": 89,
+      "source": "memory",
+      "snippet": "- `www.concordemarket.de` has a Vercel CNAME (`57b6e6de56776294.vercel-dns-016.com`) but Vercel's project redirects `www → apex`, which lands back on GoDaddy. - Fix options: 1. GoDaddy DNS: switch apex A-record to Vercel's `76.76.21.21` (or ALIAS/ANAME to `cname.vercel-dns.com`), and remove GoDaddy's default forwarding/parking. 2. OR switch nameservers to Vercel entirely. 3. OR set the Vercel project's preferred domain to `www.concordemarket.de` and remove the apex alias, then have GoDaddy redirect apex → www. - Content itself is confirmed live: `curl --resolve www.concordemarket.de:443:216.198.79.131 https://www.concordemarket.de/funnel` → 200 with correct HTML (`x-matched-path: /funn",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 0.36052181124687194,
+      "maxScore": 0.36052181124687194,
+      "firstRecalledAt": "2026-04-20T20:39:26.725Z",
+      "lastRecalledAt": "2026-04-20T20:39:26.725Z",
+      "queryHashes": [
+        "404f5b75faa0"
+      ],
+      "recallDays": [
+        "2026-04-20"
+      ],
+      "conceptTags": [
+        "www.concordemarket.de",
+        "a-record",
+        "76.76.21.21",
+        "alias/aname",
+        "cname.vercel-dns.com",
+        "forwarding/parking",
+        "216.198.79.131",
+        "www.concordemarket.de/funnel"
+      ]
+    },
+    "memory:memory/2026-04-20.md:128:141": {
+      "key": "memory:memory/2026-04-20.md:128:141",
+      "path": "memory/2026-04-20.md",
+      "startLine": 128,
+      "endLine": 141,
+      "source": "memory",
+      "snippet": "- q1 Trading-Frequenz, q2 Plattformen (Trade Republic, Bybit, Hyperliquid, dYdX etc.), q3 Derivate-Erfahrung, q4 Perps schonmal? (Verzweigung), q5 Warum Perps? (cond), q6 Warum keine Perps? (cond), q7 Asset-Klassen (top3), q8 Monatl. Volumen, q9 Max Hebel, q10 Schmerzpunkte, q11 Plattform-Wichtigkeit (top3), q12 Einzahlungsmethode, q13 Info-Quellen, q14 Selbsteinschätzung, q15 Offshore-Nutzung (+ Freitext). - **Questionnaire page**: `src/app/questionnaire/page.tsx` — Concorde-gebrandet (dark, Cormorant, #C4622D accent), conditional showIf, progress bar, single/multi/top3/multi_with_other/text types. - **Funnel integration**: Both funnel pages' inline email forms now POST to `/api/subscribe",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 0.35933876931667325,
+      "maxScore": 0.35933876931667325,
+      "firstRecalledAt": "2026-04-20T20:39:26.725Z",
+      "lastRecalledAt": "2026-04-20T20:39:26.725Z",
+      "queryHashes": [
+        "404f5b75faa0"
+      ],
+      "recallDays": [
+        "2026-04-20"
+      ],
+      "conceptTags": [
+        "trading-frequenz",
+        "derivate-erfahrung",
+        "asset-klassen",
+        "plattform-wichtigkeit",
+        "info-quellen",
+        "offshore-nutzung",
+        "src/app/questionnaire/page.tsx",
+        "concorde-gebrandet"
+      ]
+    },
+    "memory:memory/2026-04-20.md:97:121": {
+      "key": "memory:memory/2026-04-20.md:97:121",
+      "path": "memory/2026-04-20.md",
+      "startLine": 97,
+      "endLine": 121,
+      "source": "memory",
+      "snippet": "- Build: 11 routes clean, no TS errors, `/funnel` + `/funnel1` untouched and still working. ## Going forward - From now on: all Vercel deploys/alias/env operations done directly by me with the saved token, no need to bother Fabian. - Command pattern: `VERCEL_TOKEN=$(jq -r .token ~/.openclaw/credentials/vercel.json) vercel <cmd> --token \"$VERCEL_TOKEN\" --scope slaycool`. ## Logo fixes (18:17 CET) - Fabian flagged logos rendering wrong on live site. - Root causes found: 1. **META brand icon SVG path was corrupted** — contained literal string `.pretend-.948-3.508` inside the `d=` path (GPT hallucination from original redesign commit). Rendered as random blob instead of Meta infinity. 2.",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 0.3550053924322128,
+      "maxScore": 0.3550053924322128,
+      "firstRecalledAt": "2026-04-20T20:39:26.725Z",
+      "lastRecalledAt": "2026-04-20T20:39:26.725Z",
+      "queryHashes": [
+        "404f5b75faa0"
+      ],
+      "recallDays": [
+        "2026-04-20"
+      ],
+      "conceptTags": [
+        "gpt",
+        "deploys/alias/env",
+        "vercel-token",
+        "openclaw/credentials/vercel.json",
+        "948-3.508",
+        "routes",
+        "clean",
+        "errors"
+      ]
+    },
+    "memory:memory/2026-04-20.md:153:167": {
+      "key": "memory:memory/2026-04-20.md:153:167",
+      "path": "memory/2026-04-20.md",
+      "startLine": 153,
+      "endLine": 167,
+      "source": "memory",
+      "snippet": "- Layout wraps MetaPixel in Suspense (needed because of useSearchParams). - Deploy: `perps-trading-site-8d0xfq9jj`. Pixel ID verified in client JS bundle. - **Learning**: `grep` on raw SSR HTML won't find the pixel script — `next/script` with afterInteractive injects it post-hydration. Verify via `curl` of the client JS chunk instead. ## Still open before ad launch - **Cookie-Banner / Consent** — mandatory for DE with pixel active (DSGVO/TCF). Not yet built. Options: Cookiebot vs slim custom banner (essentials/marketing split, pixel gated on consent). - **0 Ads in AdSets** — campaign `6962264503878` (Concorde Cold Traffic DE) has 2 AdSets (`/funnel` + `/funnel1`, each PAUSED, €50/day) but",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 0.3690275341272354,
+      "maxScore": 0.3690275341272354,
+      "firstRecalledAt": "2026-04-20T20:54:46.229Z",
+      "lastRecalledAt": "2026-04-20T20:54:46.229Z",
+      "queryHashes": [
+        "ca1e9117a756"
+      ],
+      "recallDays": [
+        "2026-04-20"
+      ],
+      "conceptTags": [
+        "perps-trading-site-8d0xfq9jj",
+        "next/script",
+        "post-hydration",
+        "cookie-banner",
+        "dsgvo/tcf",
+        "essentials/marketing",
+        "50/day",
+        "layout"
+      ]
+    },
+    "memory:memory/2026-04-20.md:139:158": {
+      "key": "memory:memory/2026-04-20.md:139:158",
+      "path": "memory/2026-04-20.md",
+      "startLine": 139,
+      "endLine": 158,
+      "source": "memory",
+      "snippet": "- Only existing pixel in account `act_1677061273614166` was Atlas (`1513338963539278`) → created a **separate Concorde pixel** to keep audience/learning data clean. - **Concorde Pixel ID: `3434599673354714`** (name: \"Concorde\"). - Created via `POST /v19.0/act_1677061273614166/adspixels` with access_token from env (saved in meta-ads MCP config). - **Implementation**: `src/components/MetaPixel.tsx` - Client component with `next/script` (afterInteractive). - Fires `PageView` on every pathname/search change (App Router doesn't auto-fire). - `<noscript>` fallback image included. - Env override: `NEXT_PUBLIC_META_PIXEL_ID` (falls back to hardcoded default). - TypeScript-safe fbq declarat",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 0.36671216487884517,
+      "maxScore": 0.36671216487884517,
+      "firstRecalledAt": "2026-04-20T20:54:46.229Z",
+      "lastRecalledAt": "2026-04-20T20:54:46.229Z",
+      "queryHashes": [
+        "ca1e9117a756"
+      ],
+      "recallDays": [
+        "2026-04-20"
+      ],
+      "conceptTags": [
+        "router",
+        "act-1677061273614166",
+        "audience/learning",
+        "access-token",
+        "meta-ads",
+        "src/components/metapixel.tsx",
+        "next/script",
+        "pathname/search"
+      ]
+    }
+  }
+}
