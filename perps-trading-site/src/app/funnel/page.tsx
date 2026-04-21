@@ -14,7 +14,7 @@ const BURNT = "#C4622D";
 const EASE_ED = [0.16, 1, 0.3, 1] as const;
 
 // ─── Inline email form ────────────────────────────────────────────────────────
-function EmailCapture({ ctaText = "Konto eröffnen" }: { ctaText?: string }) {
+function EmailCapture({ ctaText = "Bonus sichern" }: { ctaText?: string }) {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -449,7 +449,7 @@ export default function FunnelPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ ease: "easeOut", duration: 0.5, delay: 0.72 }}
         >
-          <EmailCapture ctaText="Konto eröffnen" />
+          <EmailCapture ctaText="Bonus sichern" />
           <p className="text-[11px] mt-3 italic" style={{ color: "var(--color-text-muted)", fontFamily: SERIF }}>
             Mit deinem €20 – €250 Startbonus. Keine Kreditkarte nötig.
           </p>
@@ -902,7 +902,7 @@ export default function FunnelPage() {
               Du auch nicht.
             </p>
             <div className="flex justify-center">
-              <EmailCapture ctaText="Konto eröffnen" />
+              <EmailCapture ctaText="Bonus sichern" />
             </div>
             <p className="text-xs mt-4" style={{ color: "var(--color-text-muted)" }}>
               Mit deinem €20 – €250 Startbonus · Keine Kreditkarte · MiFID II

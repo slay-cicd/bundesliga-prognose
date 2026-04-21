@@ -26,7 +26,7 @@ function WordGate({ children, delay = 0 }: { children: React.ReactNode; delay?: 
 }
 
 // ─── Inline email capture with burnt-orange CTA ──────────────────────────────
-function EmailCapture({ ctaText = "Früher Zugang sichern" }: { ctaText?: string }) {
+function EmailCapture({ ctaText = "Zugang sichern" }: { ctaText?: string }) {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -329,7 +329,7 @@ export default function Funnel1Page() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ ease: "easeOut", duration: 0.5, delay: 0.7 }}
           >
-            <EmailCapture ctaText="Früher Zugang sichern" />
+            <EmailCapture ctaText="Zugang sichern" />
             <p className="text-xs mt-3" style={{ color: "var(--color-text-muted)" }}>
               Keine Kreditkarte &middot; Keine Mindesteinlage &middot; MiFID II lizenziert
             </p>
@@ -624,7 +624,7 @@ export default function Funnel1Page() {
               <span style={{ color: BURNT }}>Derivatehandels.</span>
             </p>
             <div className="flex justify-center">
-              <EmailCapture ctaText="Früher Zugang sichern" />
+              <EmailCapture ctaText="Zugang sichern" />
             </div>
           </SectionReveal>
         </div>
