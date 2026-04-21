@@ -8,6 +8,7 @@ import { FunnelLivePayouts } from "@/components/FunnelLivePayouts";
 import { FunnelBonusWheel } from "@/components/FunnelBonusWheel";
 import { SectionReveal } from "@/components/SectionReveal";
 import { mpTrack, mpSetFunnelVariant } from "@/lib/mixpanel";
+import { Events } from "@/components/MetaPixel";
 
 const SERIF = "var(--font-cormorant, Georgia, serif)";
 const BURNT = "#C4622D";
@@ -38,13 +39,12 @@ function EmailCapture({ ctaText = "Bonus sichern" }: { ctaText?: string }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, market: "funnel" }),
       });
-      // Fire Meta Pixel Lead event (standard event for ad optimisation)
-      if (typeof window !== "undefined" && typeof window.fbq === "function") {
-        window.fbq("track", "Lead", {
-          content_name: "funnel_aggressive",
-          content_category: "email_capture",
-        });
-      }
+      // Fire Meta Pixel Lead event (standard event for ad optimisation).
+      // Uses the queued helper — even if fbq loaded late, event is buffered.
+      Events.lead({
+        content_name: "funnel_aggressive",
+        content_category: "email_capture",
+      });
     } catch (err) {
       console.error("subscribe failed", err);
     }
@@ -225,34 +225,18 @@ export default function FunnelPage() {
 
   // Meta Pixel: fire ViewContent with variant tag on mount so we can compare
   // /funnel (aggressive) vs /funnel1 (professional) performance in Ads Manager.
-  // Also register funnel_variant as a Mixpanel super-property so every downstream
-  // event (Email Submitted, Questionnaire Completed …) is tagged automatically.
+  // Uses the queued helper — fbq might load after this effect fires.
   useEffect(() => {
     mpSetFunnelVariant("funnel");
     mpTrack("Funnel Viewed", {
       funnel_variant: "funnel",
       content_name: "funnel_aggressive",
     });
-    if (typeof window === "undefined") return;
-    // Poll for fbq — <Script strategy="afterInteractive"> can load after mount.
-    let tries = 0;
-    const fire = () => {
-      if (typeof window.fbq === "function") {
-        window.fbq("track", "ViewContent", {
-          content_name: "funnel_aggressive",
-          content_category: "landing_page",
-          content_ids: ["funnel"],
-        });
-        return true;
-      }
-      return false;
-    };
-    if (fire()) return;
-    const iv = setInterval(() => {
-      tries += 1;
-      if (fire() || tries > 25) clearInterval(iv);
-    }, 200);
-    return () => clearInterval(iv);
+    Events.viewContent({
+      content_name: "funnel_aggressive",
+      content_category: "landing_page",
+      content_ids: ["funnel"],
+    });
   }, []);
 
   // Animated "live profit" ticker — now more specific and believable

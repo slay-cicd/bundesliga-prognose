@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSearchParams } from "next/navigation";
 import { mpTrack, mpIdentify, mpSetProfile, mpSetFunnelVariant } from "@/lib/mixpanel";
+import { Events } from "@/components/MetaPixel";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -393,13 +394,12 @@ function QuestionnaireContent() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, answers: finalAnswers }),
       });
-      // Fire Meta Pixel CompleteRegistration (stronger signal than Lead)
-      if (typeof window !== "undefined" && typeof window.fbq === "function") {
-        window.fbq("track", "CompleteRegistration", {
-          content_name: "questionnaire_completed",
-          status: "completed",
-        });
-      }
+      // Fire Meta Pixel CompleteRegistration (stronger signal than Lead).
+      // Queued helper handles late-loading fbq.
+      Events.completeRegistration({
+        content_name: "questionnaire_completed",
+        status: "completed",
+      });
     } catch (e) {
       console.error("Questionnaire submit error:", e);
     }

@@ -28,12 +28,43 @@ declare global {
   }
 }
 
-/** Safe wrapper around fbq — no-op if pixel is not loaded yet. */
+/**
+ * Safe wrapper around fbq. If fbq is not ready yet (the init <Script> with
+ * strategy="afterInteractive" can load after a page's useEffect fires), we
+ * poll for up to ~10s and fire the event as soon as fbq is available. This is
+ * critical for low-interaction pages like /funnel1 where the user may click
+ * through the form before fbq finished loading, which historically led to
+ * massive event loss.
+ */
 export function fbq(...args: unknown[]) {
   if (typeof window === "undefined") return;
   if (typeof window.fbq === "function") {
-    window.fbq(...args);
+    try {
+      window.fbq(...args);
+    } catch (err) {
+      console.error("fbq call failed", err);
+    }
+    return;
   }
+  // fbq not ready yet → poll up to 10s
+  let tries = 0;
+  const maxTries = 50; // 50 * 200ms = 10s
+  const iv = setInterval(() => {
+    tries += 1;
+    if (typeof window.fbq === "function") {
+      try {
+        window.fbq(...args);
+      } catch (err) {
+        console.error("fbq call failed (deferred)", err);
+      }
+      clearInterval(iv);
+      return;
+    }
+    if (tries >= maxTries) {
+      console.warn("[MetaPixel] fbq never loaded; event dropped:", args);
+      clearInterval(iv);
+    }
+  }, 200);
 }
 
 /** Named event helper. Prefer specific named helpers below. */

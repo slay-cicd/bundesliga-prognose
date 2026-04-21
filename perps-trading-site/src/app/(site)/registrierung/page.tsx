@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import { mpTrack, mpIdentify, mpSetProfile } from "@/lib/mixpanel";
+import { Events } from "@/components/MetaPixel";
 
 const SERIF = "var(--font-cormorant, Georgia, serif)";
 const BURNT = "#C4622D";
@@ -45,12 +46,10 @@ export default function Registrierung() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, name, market: "registrierung" }),
       });
-      if (typeof window !== "undefined" && typeof window.fbq === "function") {
-        window.fbq("track", "Lead", {
-          content_name: "direct_registrierung",
-          content_category: "email_capture",
-        });
-      }
+      Events.lead({
+        content_name: "direct_registrierung",
+        content_category: "email_capture",
+      });
     } catch (err) {
       console.error("registrierung subscribe failed", err);
     }
