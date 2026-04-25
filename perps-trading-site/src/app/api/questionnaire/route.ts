@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { fireAndForgetRebuild } from "@/lib/concorde-results";
 
 const GOOGLE_SHEET_ID = process.env.GOOGLE_SHEET_ID || "";
 const SA_B64 = process.env.GOOGLE_SERVICE_ACCOUNT_B64 || "";
@@ -126,6 +127,10 @@ export async function POST(request: NextRequest) {
     }
 
     await appendToQuestionnaireSheet(email, answers || {});
+
+    // Real-time: rebuild the Results tab in the background so analytics
+    // dashboards stay fresh after every submission.
+    fireAndForgetRebuild();
 
     return NextResponse.json({ success: true, message: "Fragebogen gespeichert" });
   } catch (error) {
