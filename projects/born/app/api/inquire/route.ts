@@ -71,8 +71,15 @@ async function isDuplicate(at: string, id: string): Promise<boolean> {
 }
 
 async function appendToSheet(at: string, row: string[]): Promise<boolean> {
+  // Bug fix (2026-05-20): Sheets API `values:append` finds the "table" near
+  // the given range. Anchoring on "A1:V1" or "A:V" let the API auto-detect
+  // table boundaries that included previously-misplaced rows, causing every
+  // new write to drift further right (A → T → AB → AJ...).
+  //
+  // Fix: anchor on just "A1" — single-cell range guarantees the table is
+  // detected from column A only, so new rows always land in A:V properly.
   const res = await fetch(
-    `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${TAB}!A1:V1:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`,
+    `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${TAB}!A1:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`,
     {
       method: "POST",
       headers: {
@@ -181,6 +188,94 @@ async function sendCapiLead(opts: {
   } catch (e) {
     const err = e as Error;
     console.error("META CAPI exception", err?.message || err);
+  }
+}
+
+/**
+ * Slack notification for new leads. Posts to the Born team channel (or DM).
+ * Required env: SLACK_BOT_TOKEN, SLACK_LEAD_CHANNEL
+ * Best-effort — never blocks the user response.
+ */
+async function notifySlackNewLead(lead: {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  timeline: string;
+  relation: string;
+  services: string;
+  region: string;
+  referer: string;
+}): Promise<void> {
+  const token = process.env.SLACK_BOT_TOKEN;
+  const channel = process.env.SLACK_LEAD_CHANNEL;
+  if (!token || !channel) {
+    console.warn("SLACK_BOT_TOKEN or SLACK_LEAD_CHANNEL missing — skipping Slack notify");
+    return;
+  }
+
+  // Parse UTMs from referer for attribution
+  let utmCampaign = "";
+  let utmContent = "";
+  try {
+    const u = new URL(lead.referer);
+    utmCampaign = u.searchParams.get("utm_campaign") || "";
+    utmContent = u.searchParams.get("utm_content") || "";
+  } catch {
+    // no referer / not parseable
+  }
+
+  const TIMELINE_LABELS: Record<string, string> = {
+    now: "⏱ NOW (within month)",
+    soon: "📅 This quarter",
+    year: "📆 This year",
+    future: "🔎 Just exploring",
+  };
+  const RELATION_LABELS: Record<string, string> = {
+    self: "self",
+    parent: "for parent",
+    spouse: "for spouse",
+    other: "for family",
+    advisor: "as advisor",
+  };
+
+  const lines = [
+    `*🌱 New Born lead* — ${lead.name}`,
+    `• 📧 ${lead.email}${lead.phone ? `  • 📞 ${lead.phone}` : ""}`,
+    `• ${TIMELINE_LABELS[lead.timeline] || lead.timeline} • ${RELATION_LABELS[lead.relation] || lead.relation} • ${lead.services || "—"}`,
+    `• 📍 ${lead.region || "—"}`,
+  ];
+  if (utmCampaign || utmContent) {
+    lines.push(`• *Source:* ${utmCampaign}${utmContent ? ` / ${utmContent}` : ""}`);
+  }
+  lines.push(`<https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit?gid=0|Open in sheet →>`);
+
+  try {
+    const res = await fetch("https://slack.com/api/chat.postMessage", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({
+        channel,
+        text: lines.join("\n"),
+        unfurl_links: false,
+      }),
+    });
+    if (!res.ok) {
+      console.error("Slack notify HTTP failed", res.status, await res.text());
+      return;
+    }
+    const j = (await res.json()) as { ok: boolean; error?: string };
+    if (!j.ok) {
+      console.error("Slack notify error", j.error);
+    } else {
+      console.log("Slack notify ok", lead.id);
+    }
+  } catch (e) {
+    const err = e as Error;
+    console.error("Slack notify exception", err?.message || err);
   }
 }
 
@@ -294,6 +389,43 @@ export async function POST(req: Request) {
         region: String(body.region || ""),
       },
     }).catch((e) => console.error("CAPI fire-and-forget rejected", e));
+
+    // 4. Slack notification — ping the team when a new lead lands.
+    //    Skips test/healthcheck emails to keep the channel clean.
+    const email = (contact.email || "").toLowerCase();
+    const name = (contact.name || "").toLowerCase();
+    const isTest =
+      email.includes("noreply") ||
+      email.includes("healthcheck") ||
+      email.includes("capi-") ||
+      email.includes("pixel-test") ||
+      email.includes("verify") ||
+      email.endsWith("@example.com") ||
+      email.endsWith("@born-leads.test") ||
+      email.endsWith("@bornverify.zzz") ||
+      email.endsWith("@bornlongtest.zzz") ||
+      email.endsWith("@borntestnotreal.test") ||
+      email.endsWith(".test") ||
+      name.startsWith("test ") ||
+      name.includes("e2e") ||
+      name.includes("debug") ||
+      name.includes("healthcheck") ||
+      name.includes("sheet fix") ||
+      name.includes("sheet trace") ||
+      name.includes("sheet debug");
+    if (!isTest) {
+      notifySlackNewLead({
+        id,
+        name: contact.name || "(no name)",
+        email: contact.email || "(no email)",
+        phone: contact.phone || "",
+        timeline: String(body.timeline || ""),
+        relation: String(body.relation || ""),
+        services,
+        region: String(body.region || ""),
+        referer,
+      }).catch((e) => console.error("Slack notify failed", e));
+    }
   }
 
   return NextResponse.json({ ok: true, id });
